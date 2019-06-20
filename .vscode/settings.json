@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "http_response_handle.h": "c",
+        "camerainterface.h": "c",
+        "stat.h": "c",
+        "types.h": "c",
+        "unistd.h": "c",
+        "string.h": "c",
+        "log.h": "c",
+        "result_store.h": "c",
+        "generat_http_data.h": "c",
+        "thr_http_keep_alive.h": "c",
+        "thr_http_report.h": "c",
+        "devinfo.h": "c",
+        "whitelistinfo.h": "c",
+        "gbl.h": "c",
+        "white_list_info.h": "c",
+        "time.h": "c",
+        "wtysdk_whitelist.h": "c"
+    }
+}

@@ -1,0 +1,5 @@
+#ifndef __RESULT_STRORE_H__
+#define __RESULT_STRORE_H__
+#include "RK_LPRClientSDK.h"
+void resultStore_callback (RkSdkHandle handle, RK_PlateResult *plateResult,void *usePtr);
+#endif
