@@ -27,6 +27,68 @@ typedef struct white_list_data_s{
 	1成功
 	
 */
+
+
 int get_http_white_list_info(Reco_Result *result);
+
+
+/*
+
+函数名称:
+	white_list_add
+函数说明:
+	插入一条白名单数据
+参数:
+	white_list_data[in]:白名单信息
+返回值:
+	1 成功 其他失败
+*/
+int white_list_add(white_list_data_s *white_list_data);
+
+/*
+ *@function name: 
+ 	white_list_update
+ *@Author: yiweijiao
+ *@Date: 2019-06-20 14:28:53
+ *@describtion: 
+	白名单更新
+ *@parameter: 
+	white_list_data[in]:白名单数据
+ *@return: 
+	-1 失败
+	1成功
+*/
+int white_list_update(white_list_data_s *white_list_data);
+
+
+
+/*
+ *@function name: 
+	white_list_delete
+ *@Author: yiweijiao
+ *@Date: 2019-06-20 14:32:08
+ *@describtion: 
+	根据车牌号码删除一条白名单数据
+ *@parameter: 
+	plate_number[in]:车牌号码
+ *@return: 
+	-1 失败
+	1成功
+*/
+int white_list_delete(char *plate_number);
+/*
+ *@function name: 
+	white_list_delete_all
+ *@Author: yiweijiao
+ *@Date: 2019-06-20 14:38:49
+ *@describtion: 
+	清空白名单数据
+ *@parameter: 
+	无
+ *@return: 
+	-1 失败
+	1成功
+*/
+int white_list_delete_all();
 
 #endif

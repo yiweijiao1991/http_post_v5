@@ -132,11 +132,78 @@ int white_list_add(white_list_data_s *white_list_data)
 	}
 	return ret;
 }
-
+/*
+ *@function name: 
+ 	white_list_update
+ *@Author: yiweijiao
+ *@Date: 2019-06-20 14:28:53
+ *@describtion: 
+	白名单更新
+ *@parameter: 
+	white_list_data[in]:白名单数据
+ *@return: 
+	-1 失败
+	1成功
+*/
 int white_list_update(white_list_data_s *white_list_data)
 {
 	WTYSDK_WLIST_VEHICLE white_list_updata_info;
 	int ret = 0;
 	memset(&white_list_updata_info,0,sizeof(WTYSDK_WLIST_VEHICLE));
+
+	white_list_updata_info.bEnable = 1;
+	strcpy(white_list_updata_info.strPlateID,white_list_data->plate_number);
+	white_list_updata_info.bUsingTimeSeg = white_list_data->time_match;
+	strcpy(white_list_updata_info.struTMCreate,white_list_data->create_time);
+	strcpy(white_list_updata_info.struTMEnable,white_list_data->start_time);
+	strcpy(white_list_updata_info.struTMOverdule,white_list_data->end_time);
+	white_list_updata_info.iBlackList = white_list_data->isblack_list;
+
+	ret = WTY_WhiteListUpdateVehicleByPlateId(LOCAL_SERVER_IP,white_list_updata_info);
+	if(ret == 0)
+		return 1;
+	return -1;
+}
+/*
+ *@function name: 
+	white_list_delete
+ *@Author: yiweijiao
+ *@Date: 2019-06-20 14:32:08
+ *@describtion: 
+	根据车牌号码删除一条白名单数据
+ *@parameter: 
+	plate_number[in]:车牌号码
+ *@return: 
+	-1 失败
+	1成功
+*/
+int white_list_delete(char *plate_number)
+{
+	int ret = 0;
+	ret  = WTY_WhiteListDeleteVehicleByPlateId(LOCAL_SERVER_IP,plate_number);
+	if(ret == 0)
+		return 1;
+	return -1;
+}
+/*
+ *@function name: 
+	white_list_delete_all
+ *@Author: yiweijiao
+ *@Date: 2019-06-20 14:38:49
+ *@describtion: 
+	清空白名单数据
+ *@parameter: 
+	无
+ *@return: 
+	-1 失败
+	1成功
+*/
+int white_list_delete_all()
+{
+	int ret = 0;
+	ret = WTY_WhiteListEmptyVehicle(LOCAL_SERVER_IP);
+	if(ret == 0)
+		return 1;
+	return -1;
 
 }
