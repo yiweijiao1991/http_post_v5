@@ -20,6 +20,7 @@
 #include "generat_http_data.h"
 #include "base64.h"
 #include "log.h"
+#include "http_response_affirm.h"
 
 
 #define RESULT_TYPE_REALTIME	0 //实时传输识别结果
@@ -116,7 +117,7 @@ int read_image(char * path,unsigned char * outbuff)
 	int count = 0;
 	if(path == NULL || outbuff == NULL || strlen(path) == 0)
 	{
-		log_write("http read_image Error! reason may is path == NULL || outbuff == NULL || strlen(path) == 0");
+		log_write("http read_image Error! invalid paramer");
 		return 0;
 	}
 	fp = fopen(path,"rb");
@@ -283,23 +284,29 @@ void generate_http_result(http_reco_result_s *http_result,
 	memset(http_image_bin,0,sizeof(http_image_t));
 	if(strlen(result->FullImagePath) > 0)
 	{
-		http_image_bin->full_image_len= read_image(result->FullImagePath,http_image_bin->full_image_buff);
+		http_image_bin->full_image_len= read_image(result->FullImagePath,
+							   http_image_bin->full_image_buff);
 	}
 	if(strlen(result->PlateImagePath) > 0)
 	{
-		http_image_bin->plate_image_len = read_image(result->PlateImagePath,http_image_bin->plate_image_buff);
+		http_image_bin->plate_image_len = read_image(result->PlateImagePath,
+							     http_image_bin->plate_image_buff);
 	}
 	memset(http_image_base64,0,sizeof(http_image_t));
 	//图片转base64
 	if(http_image_bin->full_image_len > 0)
 	{
-		base64_encode(http_image_bin->full_image_buff,(char *)http_image_base64->full_image_buff,http_image_bin->full_image_len);
+		base64_encode(http_image_bin->full_image_buff,
+					 (char *)http_image_base64->full_image_buff,
+					 http_image_bin->full_image_len);
 		http_image_base64->full_image_len = strlen((char *)http_image_base64->full_image_buff);
 		
 	}
 	if(http_image_bin->plate_image_len > 0)
 	{
-		base64_encode(http_image_bin->plate_image_buff,(char *)http_image_base64->plate_image_buff,http_image_bin->plate_image_len);
+		base64_encode(http_image_bin->plate_image_buff,
+		              (char *)http_image_base64->plate_image_buff,
+					  http_image_bin->plate_image_len);
 		http_image_base64->plate_image_len = strlen((char *)http_image_base64->plate_image_buff);
 	}
 
@@ -323,7 +330,7 @@ int http_send_func(http_reco_result_s  *http_result,
 				   http_server_info_s	   *servre_info,  
 				   http_param_s        *http_config)
 {
-	char url_str[256] = {0};		//url
+	char url_str[1024] = {0};		//url
 	char *p_full_image_base64 = NULL;	//base64大图指针
 	char *p_plate_image_base64 = NULL;	//base64小图指针
 	int res;	//http请求返回值
@@ -352,10 +359,12 @@ int http_send_func(http_reco_result_s  *http_result,
 
 	if(http_result->result_type == RESULT_TYPE_REALTIME)
 	{
-		log_write("http report ready send realtime result to %s ,plate number:%s",url_str,http_result->plate_info.license);
+		log_write("http report ready send realtime result to %s ,\
+				plate number:%s",url_str,http_result->plate_info.license);
 	}else
 	{
-		log_write("http report ready send abnormal result to %s ,plate number:%s",url_str,http_result->plate_info.license);
+		log_write("http report ready send abnormal result to %s ,\
+				plate number:%s",url_str,http_result->plate_info.license);
 	}
 
 
@@ -363,31 +372,38 @@ int http_send_func(http_reco_result_s  *http_result,
 	memset(http_send_buff,0,sizeof(http_send_buff_t));
 	
 	ret = get_result_json_string(http_config,
-							http_result,
-							p_full_image_base64,
-							p_plate_image_base64,
-							&g_deviceInfo,
-							(char *)http_send_buff->data_buff,
-							HTTP_SEND_BUFF_MAX_SIZE,
-							http_config->characters_type);
+				     http_result,
+				     p_full_image_base64,
+				     p_plate_image_base64,
+				    &g_deviceInfo,
+				    (char *)http_send_buff->data_buff,
+				    HTTP_SEND_BUFF_MAX_SIZE,
+				    http_config->characters_type);
 
 	if(ret != 0)
 	{
 		//生成json失败具体原因后面添加日志
 		if(ret == -1)
-			log_write("http report send result [%s] to %s generate json string error:invalid paramer",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:\
+						invalid paramer",http_result->plate_info.license,url_str);
 		else if(ret == -2)
-			log_write("http report send result [%s] to %s generate json string error:create json section error",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:\
+						create json section error",http_result->plate_info.license,url_str);
 		else if(ret == -3)
-			log_write("http report send result [%s] to %s generate json string error:get json string error",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:\
+						get json string error",http_result->plate_info.license,url_str);
 		else if(ret == -4)
-			log_write("http report send result [%s] to %s generate json string error:storage too small",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:\
+						storage too small",http_result->plate_info.license,url_str);
 		else if(ret == -5)
-			log_write("http report send result [%s] to %s generate json string error:iconv open faile",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:\
+						iconv open faile",http_result->plate_info.license,url_str);
 		else if(ret == -6)
-			log_write("http report send result [%s] to %s generate json string error:iconv faile",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:\
+						iconv faile",http_result->plate_info.license,url_str);
 		else
-			log_write("http report send result [%s] to %s generate json string error:unknown error",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:\
+						unknown error",http_result->plate_info.license,url_str);
 		return -1;	
 	}
 	
@@ -397,7 +413,12 @@ int http_send_func(http_reco_result_s  *http_result,
 	
 
 	//发送请求
-	res = http_post(http_curl_handle,url_str,(char *)http_send_buff->data_buff,http_recive_data,http_config->session_timeout,http_config->characters_type);
+	res = http_post(http_curl_handle,
+					url_str,
+					(char *)http_send_buff->data_buff,
+					http_recive_data,
+					http_config->session_timeout,
+					http_config->characters_type);
 
 	return res;
 }
@@ -440,21 +461,31 @@ int http_realtime_result_send(Reco_Result    *result,
 	int  recive_state = -1;
 	//组织发送结果结果体
 
-	generate_http_result(&http_result,result,RESULT_TYPE_REALTIME,http_image_bin,http_image_base64);
+	generate_http_result(&http_result,
+						 result,
+						 RESULT_TYPE_REALTIME,
+						 http_image_bin,
+						 http_image_base64);
 
 	if(http_config.main_server.enable)
 	{
 		
 		for(j = 0;j < http_config.push_num;j++)
 		{
-			res = http_send_func(&http_result,http_image_base64,http_send_buff,http_recive_data,http_curl_handle,&http_config.main_server,&http_config);
+			res = http_send_func(&http_result,
+								  http_image_base64,
+								  http_send_buff,
+								  http_recive_data,
+								  http_curl_handle,
+								  &http_config.main_server,
+								  &http_config);
 			if(res == CURLE_OK)
 			{
 				//处理回应数据
 				log_write("http send realtime result [%s] to main server[%s] success[%d/%d]",http_result.plate_info.license,
-																							 http_config.main_server.url_string,
-																							 j+1,
-																							 http_config.push_num);
+													     http_config.main_server.url_string,
+													     j+1,
+													     http_config.push_num);
 				if(http_config.http_control_enable)
 				{
 					if(http_recive_data->datalen > 0)
@@ -464,25 +495,25 @@ int http_realtime_result_send(Reco_Result    *result,
 						if(ret == 0)
 						{
 							//成功
-							log_write("http resltime result[%s] of main server[%s] response handle success",http_result.plate_info.license,
-																											 http_config.main_server.url_string);
+							log_write("http resltime result[%s] of main server[%s] response handle success",
+										http_result.plate_info.license,http_config.main_server.url_string);
 							recive_state = RECIVE_STATE_SUCCESS;
 						}else
 						{
 							if(ret == -1)
-								log_write("http resltime result[%s] of main server[%s] response handle faile,paramer invalid",http_result.plate_info.license,
-																															http_config.main_server.url_string);
+								log_write("http resltime result[%s] of main server[%s] response handle faile,\
+										paramer invalid",http_result.plate_info.license,http_config.main_server.url_string);
 							else if(ret == -2)
-								log_write("http resltime result[%s] of main server[%s] response handle faile,get json struct error",http_result.plate_info.license,
-																																	http_config.main_server.url_string);
+								log_write("http resltime result[%s] of main server[%s] response handle faile,\
+											get json struct error",http_result.plate_info.license,http_config.main_server.url_string);
 
 							else if(ret == -3)
-								log_write("http resltime result[%s] of main server[%s] response handle faile,get response section in json error",http_result.plate_info.license,
-																																				http_config.main_server.url_string);
+								log_write("http resltime result[%s] of main server[%s] response handle faile,\
+											get response section in json error",http_result.plate_info.license,	http_config.main_server.url_string);
 
 							else
-								log_write("http resltime result[%s] of main server[%s] response handle faile,unknown error",http_result.plate_info.license,
-																															http_config.main_server.url_string);
+								log_write("http resltime result[%s] of main server[%s] response handle faile,\
+											unknown error",http_result.plate_info.license,http_config.main_server.url_string);
 
 							//处理失败
 							if(ret== -1)
@@ -492,12 +523,37 @@ int http_realtime_result_send(Reco_Result    *result,
 							{
 								recive_state = RECIVE_STATE_DATA_STRUCT_ERROR;
 							}
-							
+						}
+						//发送确认包
+						if(http_config.response_affirm_enable)
+						{
+							char url_str[1024] = {0};
+							if(http_config.is_ssl_connect)
+								sprintf(url_str,"https://%s",http_config.main_server.url_string);
+							else
+								sprintf(url_str,"http://%s",http_config.main_server.url_string);
+							if(ret == 0)
+							{
+								http_send_response_affirm(http_recive_data,
+														   http_send_buff,
+														   http_curl_handle,
+														   http_config,
+														   url_str,
+														   RESPONSE_SUCESS_AFFIRM);
+							}else
+							{
+								http_send_response_affirm(http_recive_data,
+														  http_send_buff,
+														  http_curl_handle,
+														  http_config,
+														  url_str,
+														  RESPONSE_FAILE_AFFIRM);
+							}
 						}
 					}else
 					{
-						log_write("http resltime result[%s] of main server[%s] get response length is 0,so no operation",http_result.plate_info.license,
-																													http_config.main_server.url_string);
+						log_write("http resltime result[%s] of main server[%s] get response length is 0,\
+									so no operation",http_result.plate_info.license,http_config.main_server.url_string);
 						
 						recive_state = RECIVE_STATE_DATA_SIZE_ZERO;
 						//接收数据为0
@@ -512,10 +568,10 @@ int http_realtime_result_send(Reco_Result    *result,
 			}else
 			{
 				log_write("http send realtime result [%s] to main server[%s] faile[%d/%d],ret = %d",http_result.plate_info.license,
-																						http_config.main_server.url_string,
-																						j+1,
-																						http_config.push_num,
-																						res);
+													   	    http_config.main_server.url_string,
+														    j+1,
+														    http_config.push_num,
+														    res);
 				if(j == (http_config.push_num -1))
 				{
 					ret_value = -1;
@@ -526,7 +582,8 @@ int http_realtime_result_send(Reco_Result    *result,
 						ret =  YBDB_Abnormal_Result_Insert(LOCAL_SERVER_IP,result,0);
 						if(0 != ret)
 						{
-							log_write("http realtime result [%s] of main server insert to abnormal database faile,ret = %d",http_result.plate_info.license,ret);
+							log_write("http realtime result [%s] of main server insert to abnormal database faile,\
+										ret = %d",http_result.plate_info.license,ret);
 						}
 					}
 						
@@ -556,25 +613,33 @@ int http_realtime_result_send(Reco_Result    *result,
 
 			for(j = 0;j < http_config.push_num;j++)
 			{
-				res = http_send_func(&http_result,http_image_base64,http_send_buff,http_recive_data,http_curl_handle,&(http_config.standby_server[i]),&http_config);
+				res = http_send_func(&http_result,
+									 http_image_base64,
+									 http_send_buff,
+									 http_recive_data,
+									 http_curl_handle,
+									 &(http_config.standby_server[i]),
+									 &http_config);
 				if(res == CURLE_OK)
 				{
 					//不处理回应,写日志
-					log_write("http send realtime result [%s] to standby server[%d]-[%s] success[%d/%d]",http_result.plate_info.license,
-																										i+1,
-																										http_config.standby_server[i].url_string,
-																										j+1,
-																										http_config.push_num);
+					log_write("http send realtime result [%s] \
+						    to standby server[%d]-[%s] success[%d/%d]",http_result.plate_info.license,
+						     						i+1,
+												http_config.standby_server[i].url_string,
+												j+1,
+												http_config.push_num);
 					recive_state = RECIVE_STATE_DATA_DONT_NEED_RESPOND;
 					break;
 				}else
 				{
-					log_write("http send realtime result [%s] to standby server[%d]-[%s] faile[%d/%d] ret = %d",http_result.plate_info.license,
-																												i+1,
-																												http_config.standby_server[i].url_string,
-																												j+1,
-																												http_config.push_num,
-																												res);
+					log_write("http send realtime result [%s] \
+						    to standby server[%d]-[%s] faile[%d/%d] ret = %d",http_result.plate_info.license,
+						   							  i+1,
+													  http_config.standby_server[i].url_string,
+													  j+1,
+													  http_config.push_num,
+													  res);
 					if(j == (http_config.push_num -1))
 					{
 						//发送失败，后面处理
@@ -583,7 +648,8 @@ int http_realtime_result_send(Reco_Result    *result,
 							ret =  YBDB_Abnormal_Result_Insert(LOCAL_SERVER_IP,result,i+1);;
 							if(0 != ret)
 							{
-								log_write("http realtime result [%s] of standby server[%d] insert to abnormal database faile,ret = %d",http_result.plate_info.license,i+1,ret);
+								log_write("http realtime result [%s] of standby server[%d] \
+											insert to abnormal database faile,ret = %d",http_result.plate_info.license,i+1,ret);
 							}
 						}	
 						recive_state = RECIVE_STATE_UNKNOWN;
@@ -685,12 +751,19 @@ int http_abnormal_result_send(http_image_t	*http_image_bin,
 				//组织发送结果结果体
 				generate_http_result(&http_result,&result,RESULT_TYPE_ABNORMAL,http_image_bin,http_image_base64);
 				//发送请求
-				res = http_send_func(&http_result,http_image_base64,http_send_buff,http_recive_data,http_curl_handle,&server_info,&http_config);
+				res = http_send_func(&http_result,
+									 http_image_base64,
+									 http_send_buff,
+									 http_recive_data,
+									 http_curl_handle,
+									 &server_info,
+									 &http_config);
 	
 				if(res == CURLE_OK)
 				{
 					//不处理回应,写日志		
-					log_write("http send abnormal result [%s] to [%s] success",http_result.plate_info.license,server_info.url_string);
+					log_write("http send abnormal result [%s] to [%s] success",http_result.plate_info.license,
+																				server_info.url_string);
 					//数据库中删除该数据
 					if(0 == YBDB_Abnormal_Result_DeleteByID(LOCAL_SERVER_IP,result.ID))
 					{
@@ -716,7 +789,9 @@ int http_abnormal_result_send(http_image_t	*http_image_bin,
 				}else
 				{
 					//发送失败，后面处理
-					log_write("http send abnormal result [%s] to [%s] faile ret = %d",http_result.plate_info.license,server_info.url_string,res);
+					log_write("http send abnormal result [%s] to [%s] faile ret = %d",http_result.plate_info.license,
+																					  server_info.url_string,
+																					  res);
 					recive_state = RECIVE_STATE_UNKNOWN;
 					ret_value = -1;
 				}

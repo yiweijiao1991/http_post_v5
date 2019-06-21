@@ -96,7 +96,8 @@ static int rs485_out(char * data)
 	int send_data_len = 0;
 	if(strlen((char *)data) > 1024*2)
 	{
-		log_write("rs485 out error, this rs485 data len is too long ,length = %d",strlen((char *)data) );
+		log_write("rs485 out error, this rs485 data len is too long \
+					,length = %d",strlen((char *)data) );
 		return -1;
 	}
 		
@@ -119,6 +120,7 @@ static int rs485_out(char * data)
 static int triger()
 {
 	triger_send();
+	return 0;
 }
 /*
 函数说明:
@@ -132,21 +134,60 @@ static int triger()
 */
 static int white_list_handle(int operation,white_list_data_s *white_list_data)
 {
-
+	int ret = 0;
 	switch(operation)
 	{
 		case WHITE_LIST_ADD:
-							break;
+			if(1 != white_list_add(white_list_data))
+			{
+				log_write("white list add faile,platenumber:%s",white_list_data->plate_number);
+				ret = -1;
+			}else
+			{
+				log_write("white list add success,platenumber:%s",white_list_data->plate_number);
+				ret = 0;
+			}
+
+			break;
 		case WHITE_LIST_UPDATE:
-							break;
+			if(1 != white_list_update(white_list_data))
+			{
+				log_write("white list update faile,plate number:%s",white_list_data->plate_number);
+				ret = -1;
+			}else
+			{
+				log_write("white list update success,plate number:%s",white_list_data->plate_number);
+				ret = 0;
+			}
+			break;
 		case WHTTE_LIST_DELETE:
-							break;
+			if(1 != white_list_delete(white_list_data->plate_number))
+			{
+				log_write("white list delete faile,plate number:%s",white_list_data->plate_number);
+				ret = -1;
+			}else
+			{
+				log_write("white list delete success,plate number:%s",white_list_data->plate_number);
+				ret = 0;
+			}
+			break;
 		case WHITE_LIST_DELETE_ALL:
-							break;
+			if(1 != white_list_delete_all())
+			{
+				log_write("white list delete all faile");
+				ret = -1;
+			}else
+			{
+				log_write("white list delete all success");
+				ret = 0;
+			}
+			break;
 		default:
-							break;
+			log_write("white list operation faile, cmd error ,cmd = %d\n",operation);
+			ret = -1;
+			break;
 	}
-	return 0;
+	return ret;
 }
 /*
 函数说明:
@@ -238,14 +279,14 @@ int response_handle(unsigned char * data,int *barrier_control_result)
 					{
 						if((cJSON_IsNumber(cJSON_GetObjectItem(gpio_subitem,"data"))))
 						{
-							gpio_out_func(cJSON_GetObjectItem(gpio_subitem,"io_num")->valueint,cJSON_GetObjectItem(gpio_subitem,"data")->valueint);
+							gpio_out_func(cJSON_GetObjectItem(gpio_subitem,"io_num")->valueint,
+										  cJSON_GetObjectItem(gpio_subitem,"data")->valueint);
 						}		
 					}
 
 				}
 			}
 		}
-	
 	}
 	//rs485控制
 	rs485_data = cJSON_GetObjectItem(response,"rs485_data");
@@ -318,7 +359,8 @@ int response_handle(unsigned char * data,int *barrier_control_result)
 						//车牌号码
 						if(cJSON_IsString(cJSON_GetObjectItem(whitelist_subitem,"plate_number")))
 						{
-							strcpy(white_list_temp.plate_number,cJSON_GetObjectItem(whitelist_subitem,"plate_number")->valuestring);
+							strcpy(white_list_temp.plate_number,
+									cJSON_GetObjectItem(whitelist_subitem,"plate_number")->valuestring);
 						}
 						//时间匹配使能
 						if(cJSON_IsString(cJSON_GetObjectItem(whitelist_subitem,"time_match")))
@@ -331,17 +373,20 @@ int response_handle(unsigned char * data,int *barrier_control_result)
 						//创建时间
 						if(cJSON_IsString(cJSON_GetObjectItem(whitelist_subitem,"create_time")))
 						{
-							strcpy(white_list_temp.create_time,cJSON_GetObjectItem(whitelist_subitem,"create_time")->valuestring);
+							strcpy(white_list_temp.create_time,
+									cJSON_GetObjectItem(whitelist_subitem,"create_time")->valuestring);
 						}
 						//开始时间
 						if(cJSON_IsString(cJSON_GetObjectItem(whitelist_subitem,"start_time")))
 						{
-							strcpy(white_list_temp.start_time,cJSON_GetObjectItem(whitelist_subitem,"start_time")->valuestring);
+							strcpy(white_list_temp.start_time,
+									cJSON_GetObjectItem(whitelist_subitem,"start_time")->valuestring);
 						}
 						//结束时间
 						if(cJSON_IsString(cJSON_GetObjectItem(whitelist_subitem,"end_time")))
 						{
-							strcpy(white_list_temp.end_time,cJSON_GetObjectItem(whitelist_subitem,"end_time")->valuestring);
+							strcpy(white_list_temp.end_time,
+									cJSON_GetObjectItem(whitelist_subitem,"end_time")->valuestring);
 						}
 						//黑名单
 						if(cJSON_IsString(cJSON_GetObjectItem(whitelist_subitem,"is_black_list")))
@@ -394,5 +439,4 @@ out:
 		root = NULL;
 	}
 	return ret_value;
-	
 }

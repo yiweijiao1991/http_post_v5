@@ -346,7 +346,7 @@ typedef struct RK_HttpParam
 typedef struct http_server_info_s
 {
 	 int 				enable;			//使能开关 0:不开启 1:开启
-	char			    url_string[512];
+	char			    url_string[1024];
 	int 				keepalive_enable;
 	int 				keeplive_interval;	// 推送心跳间隔时间 单位秒
 	int  				io_report_enable;
@@ -373,6 +373,7 @@ typedef struct http_param_s{
 	 int characters_type;								//汉字字符编码 0 GB2312 1 UTF-8
 	 int is_ssl_connect;								//是否启用ssl
 	 int http_control_enable;							//http控制输出是否启用
+	 int response_affirm_enable;						//回应确认包使能
 	 http_server_info_s		main_server;
 	 http_server_info_s 	standby_server[2];
 	char				reserved[64];

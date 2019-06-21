@@ -76,7 +76,8 @@ static int write_file(char *file_name, unsigned char *image_data, int image_size
 	file = fopen(file_name, "wb+");
 	if(file == NULL)
 	{
-		log_write("save image faile ,open %s faile datalen = %d errno = %d",file_name,image_size,errno);
+		log_write("save image faile , \
+				open %s faile datalen = %d errno = %d",file_name,image_size,errno);
 		return -1;
 	}
 		
@@ -283,8 +284,6 @@ void save_http_result(RK_PlateResult *plate_result)
 	*/
 	time_t tt;
 	struct tm *t;
-	
-	int Triger_Type = 0;//触发方式 0未知 1地感模式地感触发 2地赶模式模拟出发  3 视频识别自动识别  4 视频识别模拟触发  5 视频+地感 地感触发  6 视频+地感 模拟触发
 	if(plate_result->nPlateCount > 0)
 	{
 		log_write("http get result form camera plate number is %s",plate_result->strRecResultItem.license);

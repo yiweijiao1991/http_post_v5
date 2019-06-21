@@ -8,6 +8,8 @@
 #include "pthread.h"
 #include "log.h"
 
+#define _VERSION_ "3.0"
+
 
 http_param_s g_http_cfg;//HTTP配置信息
 RK_DeviceInfo g_deviceInfo;
@@ -37,7 +39,7 @@ int main()
 		printf("log init faile");
 		return -1;
 	}
-	log_write("***http_proc start***");
+	log_write("********http_proc(%s) start*********",_VERSION_);
 	ret = init_interface();
 	if(ret < 0)
 	{

@@ -11,7 +11,7 @@
 #include "cameraInterface.h"
 #include "http_response_handle.h"
 #include "log.h"
-
+#include "http_response_affirm.h"
 
 extern RK_DeviceInfo g_deviceInfo;
 extern http_param_s g_http_cfg;//HTTP配置信息
@@ -102,7 +102,7 @@ void io_report(io_report_ptr_s *io_report_ptr,http_io_state_s *io_state,http_par
 	int ret = 0;
 	int res;
 	int  barrier_control_result  = 0;
-	char url_str[256] = {0};
+	char url_str[1024] = {0};
 	
 	if(!io_report_ptr->http_curl_handle || !io_report_ptr->http_recive_data || !io_report_ptr->http_send_buff)
 			return ;
@@ -120,14 +120,22 @@ void io_report(io_report_ptr_s *io_report_ptr,http_io_state_s *io_state,http_par
 	log_write("gpio report ready send gpio info to %s",url_str);
 	//组织json数据
 	memset(io_report_ptr->http_send_buff,0,sizeof(io_report_ptr->http_send_buff));
-	ret = get_io_state_json(&g_deviceInfo,io_state,(char *)io_report_ptr->http_send_buff->data_buff,HTTP_SEND_BUFF_MAX_SIZE);
+	ret = get_io_state_json(&g_deviceInfo,
+							io_state,
+							(char *)io_report_ptr->http_send_buff->data_buff,
+							HTTP_SEND_BUFF_MAX_SIZE);
 	
 	if(ret == 0)
 	{
 		//发送请求
 		io_report_ptr->http_send_buff->data_len = strlen((char *)io_report_ptr->http_send_buff->data_buff);
 		memset(io_report_ptr->http_recive_data,0,sizeof(http_recive_data_s));
-		res = http_post(io_report_ptr->http_curl_handle,url_str,(char *)io_report_ptr->http_send_buff->data_buff,io_report_ptr->http_recive_data,http_config.session_timeout,http_config.characters_type);
+		res = http_post(io_report_ptr->http_curl_handle,
+						url_str,
+						(char *)io_report_ptr->http_send_buff->data_buff,
+						io_report_ptr->http_recive_data,
+						http_config.session_timeout,
+						http_config.characters_type);
 		if(res == CURLE_OK)
 		{
 			log_write("gpio report send gpio info to %s success",url_str);
@@ -138,7 +146,8 @@ void io_report(io_report_ptr_s *io_report_ptr,http_io_state_s *io_state,http_par
 				{
 					log_write("gpio report to  %s ready handle response",url_str);
 
-					ret = response_handle(io_report_ptr->http_recive_data->data,&barrier_control_result);
+					ret = response_handle(io_report_ptr->http_recive_data->data,
+										  &barrier_control_result);
 					if(ret == 0)
 					{
 						//成功
@@ -148,16 +157,41 @@ void io_report(io_report_ptr_s *io_report_ptr,http_io_state_s *io_state,http_par
 						//数据处理失败
 						if(ret == -1)
 						{
-							log_write("gpio report response handle faile,paramer invalid,url is %s",url_str);
+							log_write("gpio report response handle faile, \
+										paramer invalid,url is %s",url_str);
 						}else if(ret == -2)
 						{
-							log_write("gpio report response handle faile,get json struct error,url is %s",url_str);
+							log_write("gpio report response handle faile, \
+										get json struct error,url is %s",url_str);
 						}else if(ret == -3)
 						{
-							log_write("gpio report response handle faile,get response section in json error,url is %s",url_str);
+							log_write("gpio report response handle faile,\
+									  get response section in json error,url is %s",url_str);
 						}else
 						{
-							log_write("gpio report response handle faile,unknown error,url is %s",url_str);
+							log_write("gpio report response handle faile, \
+									   unknown error,url is %s",url_str);
+						}
+					}
+							//发送确认包
+					if(http_config.response_affirm_enable)
+					{
+						if(ret == 0)
+						{
+							http_send_response_affirm(io_report_ptr->http_recive_data,
+													 io_report_ptr->http_send_buff,
+													 io_report_ptr->http_curl_handle,
+													 http_config,
+													 url_str,
+													 RESPONSE_SUCESS_AFFIRM);
+						}else
+						{
+							http_send_response_affirm(io_report_ptr->http_recive_data,
+													 io_report_ptr->http_send_buff,
+													 io_report_ptr->http_curl_handle,
+													 http_config,
+													 url_str,
+													 RESPONSE_FAILE_AFFIRM);
 						}
 					}
 				}else
@@ -176,15 +210,20 @@ void io_report(io_report_ptr_s *io_report_ptr,http_io_state_s *io_state,http_par
 	{
 		//获取json失败
 		if(ret == -1)
-			log_write("gpio report request faile ,generate json string faile,paramer invalid,url is %s ret = %d",url_str,ret);
+			log_write("gpio report request faile , generate json string faile, \
+			           paramer invalid,url is %s ret = %d",url_str,ret);
 		else if(ret == -2)
-			log_write("gpio report request faile ,generate json string faile,create json section faile,url is %s ret = %d",url_str,ret);
+			log_write("gpio report request faile ,generate json string faile, \
+						create json section faile,url is %s ret = %d",url_str,ret);
 		else if(ret == -3)
-			log_write("gpio report request faile ,generate json string faile,get string error,url is %s ret = %d",url_str,ret);
+			log_write("gpio report request faile ,generate json string faile, \
+					  get string error,url is %s ret = %d",url_str,ret);
 		else if(ret == -4)
-			log_write("gpio report request faile ,generate json string faile,memory too small,url is %s ret = %d",url_str,ret);
+			log_write("gpio report request faile ,generate json string faile, \
+					    memory too small,url is %s ret = %d",url_str,ret);
 		else
-			log_write("gpio report request faile ,generate json string faile,unknown error ,url is %s ret = %d",url_str,ret);
+			log_write("gpio report request faile ,generate json string faile, \
+			  		   unknown error ,url is %s ret = %d",url_str,ret);
 	}
 }
 

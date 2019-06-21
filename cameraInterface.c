@@ -241,6 +241,7 @@ void http_config_get(http_param_s *http_info)
 	memset(http_info,0,sizeof(http_param_s));
 	//test
 	http_info->is_ssl_connect = 0;
+	http_info->response_affirm_enable = 1;
 	http_info->characters_type = 0;
 	http_info->offline_continuingly_en = 0;
 	http_info->http_control_enable =1;
@@ -252,7 +253,7 @@ void http_config_get(http_param_s *http_info)
 	http_info->main_server.keepalive_enable = 0;
 	http_info->main_server.keeplive_interval = 5;
 	//strcpy(http_info->main_server.url_string,"allinaent.e1.luyouxia.net:29961/camera/lprcresult");
-	strcpy(http_info->main_server.url_string,"172.16.10.88:8080/test1");
-	//strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/HTTP_Test1.cgi");
+	//strcpy(http_info->main_server.url_string,"172.16.10.88:8080/test1");
+	strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/HTTP_Test1.cgi");
 	return ;
 }
