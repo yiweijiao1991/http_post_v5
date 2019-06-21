@@ -71,20 +71,15 @@ void http_send_response_affirm(http_recive_data_s *http_recive_data,
     {
         //获取json失败
 		if(ret == -1)
-			log_write("http send respond affirm request faile, \
-                    generate json string faile,paramer invalid,url is %s ret = %d",url,ret);
+			log_write("http send respond affirm request faile,generate json string faile,paramer invalid,url is %s ret = %d",url,ret);
 		else if(ret == -2)
-			log_write("http send respond affirm request faile ,\
-                        generate json string faile,create json section faile,url is %s ret = %d",url,ret);
+			log_write("http send respond affirm request faile ,generate json string faile,create json section faile,url is %s ret = %d",url,ret);
 		else if(ret == -3)
-			log_write("http send respond affirm request faile, \
-                        generate json string faile,get string error,url is %s ret = %d",url,ret);
+			log_write("http send respond affirm request faile,generate json string faile,get string error,url is %s ret = %d",url,ret);
 		else if(ret == -4)
-				log_write("http send respond affirm request faile, \
-                            generate json string faile,memory too small,url is %s ret = %d",url,ret);
+				log_write("http send respond affirm request faile,generate json string faile,memory too small,url is %s ret = %d",url,ret);
 		else
-				log_write("http send respond affirm request faile, \
-                            generate json string faile,unknown error ,url is %s ret = %d",url,ret);
+				log_write("http send respond affirm request faile,generate json string faile,unknown error ,url is %s ret = %d",url,ret);
     }
     return;
 }

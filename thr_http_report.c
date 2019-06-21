@@ -88,7 +88,7 @@ int remove_file(char * filename)
 	char system_cmd[1024] = {0};
 	if(filename ==NULL || strlen(filename) <=0 )
 	{
-		log_write("remove error filename is null\n");
+		log_write("remove error filename is null");
 		return ret;
 	}
 	if(remove(filename) != 0 )
@@ -359,12 +359,10 @@ int http_send_func(http_reco_result_s  *http_result,
 
 	if(http_result->result_type == RESULT_TYPE_REALTIME)
 	{
-		log_write("http report ready send realtime result to %s ,\
-				plate number:%s",url_str,http_result->plate_info.license);
+		log_write("http report ready send realtime result to %s ,plate number:%s",url_str,http_result->plate_info.license);
 	}else
 	{
-		log_write("http report ready send abnormal result to %s ,\
-				plate number:%s",url_str,http_result->plate_info.license);
+		log_write("http report ready send abnormal result to %s ,plate number:%s",url_str,http_result->plate_info.license);
 	}
 
 
@@ -384,26 +382,19 @@ int http_send_func(http_reco_result_s  *http_result,
 	{
 		//生成json失败具体原因后面添加日志
 		if(ret == -1)
-			log_write("http report send result [%s] to %s generate json string error:\
-						invalid paramer",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:invalid paramer",http_result->plate_info.license,url_str);
 		else if(ret == -2)
-			log_write("http report send result [%s] to %s generate json string error:\
-						create json section error",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:create json section error",http_result->plate_info.license,url_str);
 		else if(ret == -3)
-			log_write("http report send result [%s] to %s generate json string error:\
-						get json string error",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:et json string error",http_result->plate_info.license,url_str);
 		else if(ret == -4)
-			log_write("http report send result [%s] to %s generate json string error:\
-						storage too small",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:storage too small",http_result->plate_info.license,url_str);
 		else if(ret == -5)
-			log_write("http report send result [%s] to %s generate json string error:\
-						iconv open faile",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:iconv open faile",http_result->plate_info.license,url_str);
 		else if(ret == -6)
-			log_write("http report send result [%s] to %s generate json string error:\
-						iconv faile",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:iconv faile",http_result->plate_info.license,url_str);
 		else
-			log_write("http report send result [%s] to %s generate json string error:\
-						unknown error",http_result->plate_info.license,url_str);
+			log_write("http report send result [%s] to %s generate json string error:unknown error",http_result->plate_info.license,url_str);
 		return -1;	
 	}
 	
@@ -501,19 +492,15 @@ int http_realtime_result_send(Reco_Result    *result,
 						}else
 						{
 							if(ret == -1)
-								log_write("http resltime result[%s] of main server[%s] response handle faile,\
-										paramer invalid",http_result.plate_info.license,http_config.main_server.url_string);
+								log_write("http resltime result[%s] of main server[%s] response handle faile,paramer invalid",http_result.plate_info.license,http_config.main_server.url_string);
 							else if(ret == -2)
-								log_write("http resltime result[%s] of main server[%s] response handle faile,\
-											get json struct error",http_result.plate_info.license,http_config.main_server.url_string);
+								log_write("http resltime result[%s] of main server[%s] response handle faile,get json struct error",http_result.plate_info.license,http_config.main_server.url_string);
 
 							else if(ret == -3)
-								log_write("http resltime result[%s] of main server[%s] response handle faile,\
-											get response section in json error",http_result.plate_info.license,	http_config.main_server.url_string);
+								log_write("http resltime result[%s] of main server[%s] response handle faile,get response section in json error",http_result.plate_info.license,	http_config.main_server.url_string);
 
 							else
-								log_write("http resltime result[%s] of main server[%s] response handle faile,\
-											unknown error",http_result.plate_info.license,http_config.main_server.url_string);
+								log_write("http resltime result[%s] of main server[%s] response handle faile,unknown error",http_result.plate_info.license,http_config.main_server.url_string);
 
 							//处理失败
 							if(ret== -1)
@@ -552,8 +539,7 @@ int http_realtime_result_send(Reco_Result    *result,
 						}
 					}else
 					{
-						log_write("http resltime result[%s] of main server[%s] get response length is 0,\
-									so no operation",http_result.plate_info.license,http_config.main_server.url_string);
+						log_write("http resltime result[%s] of main server[%s] get response length is 0,so no operation",http_result.plate_info.license,http_config.main_server.url_string);
 						
 						recive_state = RECIVE_STATE_DATA_SIZE_ZERO;
 						//接收数据为0
@@ -582,8 +568,7 @@ int http_realtime_result_send(Reco_Result    *result,
 						ret =  YBDB_Abnormal_Result_Insert(LOCAL_SERVER_IP,result,0);
 						if(0 != ret)
 						{
-							log_write("http realtime result [%s] of main server insert to abnormal database faile,\
-										ret = %d",http_result.plate_info.license,ret);
+							log_write("http realtime result [%s] of main server insert to abnormal database faile,ret = %d",http_result.plate_info.license,ret);
 						}
 					}
 						
@@ -623,8 +608,7 @@ int http_realtime_result_send(Reco_Result    *result,
 				if(res == CURLE_OK)
 				{
 					//不处理回应,写日志
-					log_write("http send realtime result [%s] \
-						    to standby server[%d]-[%s] success[%d/%d]",http_result.plate_info.license,
+					log_write("http send realtime result [%s] to standby server[%d]-[%s] success[%d/%d]",http_result.plate_info.license,
 						     						i+1,
 												http_config.standby_server[i].url_string,
 												j+1,
@@ -633,8 +617,7 @@ int http_realtime_result_send(Reco_Result    *result,
 					break;
 				}else
 				{
-					log_write("http send realtime result [%s] \
-						    to standby server[%d]-[%s] faile[%d/%d] ret = %d",http_result.plate_info.license,
+					log_write("http send realtime result [%s]to standby server[%d]-[%s] faile[%d/%d] ret = %d",http_result.plate_info.license,
 						   							  i+1,
 													  http_config.standby_server[i].url_string,
 													  j+1,
@@ -648,8 +631,7 @@ int http_realtime_result_send(Reco_Result    *result,
 							ret =  YBDB_Abnormal_Result_Insert(LOCAL_SERVER_IP,result,i+1);;
 							if(0 != ret)
 							{
-								log_write("http realtime result [%s] of standby server[%d] \
-											insert to abnormal database faile,ret = %d",http_result.plate_info.license,i+1,ret);
+								log_write("http realtime result [%s] of standby server[%d] insert to abnormal database faile,ret = %d",http_result.plate_info.license,i+1,ret);
 							}
 						}	
 						recive_state = RECIVE_STATE_UNKNOWN;
@@ -835,7 +817,7 @@ void *thr_http_report(void *arg)
 	CURL 			*http_curl_handle = NULL;
 	http_send_buff_t * http_send_buff = NULL;
 
-	log_write("************ http report thread start *****************\n");
+	log_write("************ http report thread start *****************");
 
 	//分配内存和资源
 	http_image_bin = (http_image_t *)malloc(sizeof(http_image_t));

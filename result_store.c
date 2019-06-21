@@ -76,8 +76,7 @@ static int write_file(char *file_name, unsigned char *image_data, int image_size
 	file = fopen(file_name, "wb+");
 	if(file == NULL)
 	{
-		log_write("save image faile , \
-				open %s faile datalen = %d errno = %d",file_name,image_size,errno);
+		log_write("save image faile ,open %s faile datalen = %d errno = %d",file_name,image_size,errno);
 		return -1;
 	}
 		

@@ -85,17 +85,13 @@ void http_keep_alive_handle(http_recive_data_s *http_recive_data,
 					{
 						//数据处理失败
 						if(ret == -1)
-							log_write("http keepalive response handle faile,\
-										paramer invalid,url is %s",url_str);
+							log_write("http keepalive response handle faile,paramer invalid,url is %s",url_str);
 						else if(ret == -2)
-							log_write("http keepalive response handle faile,\
-										get json struct error,url is %s",url_str);
+							log_write("http keepalive response handle faile,get json struct error,url is %s",url_str);
 						else if(ret == -3)
-							log_write("http keepalive response handle faile,\
-										get response section in json error,url is %s",url_str);
+							log_write("http keepalive response handle faile,get response section in json error,url is %s",url_str);
 						else
-							log_write("http keepalive response handle faile,\
-										unknown error,url is %s",url_str);
+							log_write("http keepalive response handle faile,nknown error,url is %s",url_str);
 					}
 					//发送确认包
 					if(http_config.response_affirm_enable)
@@ -122,8 +118,7 @@ void http_keep_alive_handle(http_recive_data_s *http_recive_data,
 				}else
 				{
 					//接收数据为0
-					log_write("http keepalive get response length is 0, \
-								so no operation,url is %s",url_str);
+					log_write("http keepalive get response length is 0,so no operation,url is %s",url_str);
 				}
 			}
 					
@@ -136,20 +131,15 @@ void http_keep_alive_handle(http_recive_data_s *http_recive_data,
 	{
 		//获取json失败
 		if(ret == -1)
-			log_write("http keepalive request faile ,generate json string faile,\
-						paramer invalid,url is %s ret = %d",url_str,ret);
+			log_write("http keepalive request faile ,generate json string faile,paramer invalid,url is %s ret = %d",url_str,ret);
 		else if(ret == -2)
-			log_write("http keepalive request faile ,generate json string faile,\
-						create json section faile,url is %s ret = %d",url_str,ret);
+			log_write("http keepalive request faile ,generate json string faile,create json section faile,url is %s ret = %d",url_str,ret);
 		else if(ret == -3)
-			log_write("http keepalive request faile ,generate json string faile,\
-						get string error,url is %s ret = %d",url_str,ret);
+			log_write("http keepalive request faile ,generate json string faile,get string error,url is %s ret = %d",url_str,ret);
 		else if(ret == -4)
-				log_write("http keepalive request faile ,generate json string faile,\
-							memory too small,url is %s ret = %d",url_str,ret);
+				log_write("http keepalive request faile ,generate json string faile,memory too small,url is %s ret = %d",url_str,ret);
 		else
-				log_write("http keepalive request faile ,generate json string faile,\
-							unknown error ,url is %s ret = %d",url_str,ret);
+				log_write("http keepalive request faile ,generate json string faile,unknown error ,url is %s ret = %d",url_str,ret);
 		
 	}
 		
@@ -175,7 +165,7 @@ void *thr_http_keep_alive(void *arg)
 	CURL 			   *http_curl_handle = NULL;//http请求句柄
 	http_send_buff_t * http_send_buff = NULL;	//发送缓冲区结构体指针
 
-	log_write("************ http keepalive thread start *****************\n");
+	log_write("************ http keepalive thread start *****************");
 	
 	//开辟空间
 	http_recive_data = (http_recive_data_s *)malloc(sizeof(http_recive_data_s));

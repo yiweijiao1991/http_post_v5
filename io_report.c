@@ -157,20 +157,16 @@ void io_report(io_report_ptr_s *io_report_ptr,http_io_state_s *io_state,http_par
 						//数据处理失败
 						if(ret == -1)
 						{
-							log_write("gpio report response handle faile, \
-										paramer invalid,url is %s",url_str);
+							log_write("gpio report response handle faile,paramer invalid,url is %s",url_str);
 						}else if(ret == -2)
 						{
-							log_write("gpio report response handle faile, \
-										get json struct error,url is %s",url_str);
+							log_write("gpio report response handle faile,get json struct error,url is %s",url_str);
 						}else if(ret == -3)
 						{
-							log_write("gpio report response handle faile,\
-									  get response section in json error,url is %s",url_str);
+							log_write("gpio report response handle faile,get response section in json error,url is %s",url_str);
 						}else
 						{
-							log_write("gpio report response handle faile, \
-									   unknown error,url is %s",url_str);
+							log_write("gpio report response handle faile,unknown error,url is %s",url_str);
 						}
 					}
 							//发送确认包
@@ -210,20 +206,15 @@ void io_report(io_report_ptr_s *io_report_ptr,http_io_state_s *io_state,http_par
 	{
 		//获取json失败
 		if(ret == -1)
-			log_write("gpio report request faile , generate json string faile, \
-			           paramer invalid,url is %s ret = %d",url_str,ret);
+			log_write("gpio report request faile , generate json string faile,paramer invalid,url is %s ret = %d",url_str,ret);
 		else if(ret == -2)
-			log_write("gpio report request faile ,generate json string faile, \
-						create json section faile,url is %s ret = %d",url_str,ret);
+			log_write("gpio report request faile ,generate json string faile,create json section faile,url is %s ret = %d",url_str,ret);
 		else if(ret == -3)
-			log_write("gpio report request faile ,generate json string faile, \
-					  get string error,url is %s ret = %d",url_str,ret);
+			log_write("gpio report request faile ,generate json string faile,get string error,url is %s ret = %d",url_str,ret);
 		else if(ret == -4)
-			log_write("gpio report request faile ,generate json string faile, \
-					    memory too small,url is %s ret = %d",url_str,ret);
+			log_write("gpio report request faile ,generate json string faile,memory too small,url is %s ret = %d",url_str,ret);
 		else
-			log_write("gpio report request faile ,generate json string faile, \
-			  		   unknown error ,url is %s ret = %d",url_str,ret);
+			log_write("gpio report request faile ,generate json string faile,unknown error ,url is %s ret = %d",url_str,ret);
 	}
 }
 

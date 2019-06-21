@@ -224,7 +224,6 @@ void device_info_get(RK_DeviceInfo *deviceInfo)
 */
 void http_config_get(http_param_s *http_info)
 {
-
 	log_write("get http config info from camera");
 	if(g_rkhandle <= 0)
 	{
@@ -233,7 +232,7 @@ void http_config_get(http_param_s *http_info)
 	}
 	if(!http_info)
 	{
-		log_write(" http_config_get()::Parameter is invalid!");
+		log_write(" http_config_get()::Parameter is invalid!")
 		return;
 	}
 	//memset(http_info,0,sizeof(RK_HttpParam));
@@ -254,6 +253,7 @@ void http_config_get(http_param_s *http_info)
 	http_info->main_server.keeplive_interval = 5;
 	//strcpy(http_info->main_server.url_string,"allinaent.e1.luyouxia.net:29961/camera/lprcresult");
 	//strcpy(http_info->main_server.url_string,"172.16.10.88:8080/test1");
-	strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/HTTP_Test1.cgi");
+	//strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/HTTP_Test1.cgi");
+	strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/ http_barrier_rs485.cgi");
 	return ;
 }

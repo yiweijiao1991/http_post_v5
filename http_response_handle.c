@@ -96,8 +96,7 @@ static int rs485_out(char * data)
 	int send_data_len = 0;
 	if(strlen((char *)data) > 1024*2)
 	{
-		log_write("rs485 out error, this rs485 data len is too long \
-					,length = %d",strlen((char *)data) );
+		log_write("rs485 out error, this rs485 data len is too long	,length = %d",strlen((char *)data) );
 		return -1;
 	}
 		
