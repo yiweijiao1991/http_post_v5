@@ -47,7 +47,7 @@ static int barrier_control_func(int operation)
 			break;
 		case BARRIER_OPERATION_CLOSE:
 			//落杆
-			 barrier_gate_open();
+			 barrier_gate_close();
 			 ret = 0;
 			break;
 		default:

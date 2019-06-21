@@ -4,28 +4,8 @@
 #include <errno.h>  
 #include "generat_http_data.h"
 #include "cJSON.h"
-#include "iconv.h"
 #include "http_post_data.h"
-
-
-int code_convert(char *from_charset, char *to_charset, char *inbuf, int inlen, char *outbuf, int outlen)
-{
-	iconv_t iconv_handle;
-	char **pin = &inbuf;
-	char **pout = &outbuf;
-	iconv_handle = iconv_open(to_charset, from_charset);
-	if (iconv_handle == 0) 
-		return -1;
-	if (iconv(iconv_handle, pin, (size_t *)&inlen, pout,(size_t *) &outlen) == -1) 
-	{
-		iconv_close(iconv_handle);
-		return -2;
-	}
-	iconv_close(iconv_handle);
-	return 0;
-}
-
-
+#include "code_cover.h"
 /*
 函数名称：get_result_json_string
 函数功能:

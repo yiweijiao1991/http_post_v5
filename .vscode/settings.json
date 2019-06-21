@@ -16,6 +16,7 @@
         "gbl.h": "c",
         "white_list_info.h": "c",
         "time.h": "c",
-        "wtysdk_whitelist.h": "c"
+        "wtysdk_whitelist.h": "c",
+        "iconv.h": "c"
     }
 }

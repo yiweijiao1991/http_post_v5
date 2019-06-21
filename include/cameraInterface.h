@@ -20,6 +20,8 @@
 int init_interface();
 /*道闸打开*/
 void barrier_gate_open();
+/*道闸关闭*/
+void barrier_gate_close();
 /*
 函数名称：RS485_transparent
 函数功能:
