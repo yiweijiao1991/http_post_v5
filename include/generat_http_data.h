@@ -56,16 +56,6 @@ typedef struct http_reco_result_s
 	http_whitelist_info_s white_list_data;
 } http_reco_result_s;
 
-
-typedef struct http_io_state_s
-{
-	unsigned char gpio_in_1;
-	unsigned char gpio_in_2;
-	unsigned char gpio_in_3;
-	unsigned char gpio_in_4;
-} http_io_state_s;
-
-
 /******************************************************
 		接口
 *******************************************************/
@@ -152,6 +142,6 @@ get_io_state_json
 	-4 json 存储区 大小不够
     0成功
 */
-int get_io_state_json(RK_DeviceInfo *device_info,http_io_state_s *io_state,char * json_buff,int json_buff_max_size);
+int get_io_state_json(RK_DeviceInfo *device_info,RK_Gpio *io_state,char * json_buff,int json_buff_max_size);
 
 #endif

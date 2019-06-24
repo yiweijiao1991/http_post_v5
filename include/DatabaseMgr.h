@@ -18,40 +18,40 @@ extern "C" {
 ******************************/
 typedef struct HttpTransRecord_t
 {
-	int 		 HttpID;		//唯一的ID
-	char		PlateNumber[16];	//车牌号码
-	char 		RecDateTime[20];	//识别时间
-	char		TransDateTime[20];	//传输时间
-	int 		FullImageSize;		//全景图大小
-	int 		PlateImageSize;		//\u8f66\u724c\u56fe\u5927\u5c0f
-	int 		IPtype;			//\u4f7f\u7528IP\u8fd8\u662f\u57df\u540d 0 IP  1\u57df\u540d
-	char 		IP_Domain[50];		//IP \u6216 \u57df\u540d
-	int 		Port;			//\u7aef\u53e3
-	char 		Path[200];		//\u670d\u52a1\u7a0b\u5e8f\u8def\u5f84
-	int 		TransType;		//\u4f20\u9001\u65b9\u5f0f  0 \u5373\u65f6\u63a8\u9001\u6570\u636e 1 \u5f02\u5e38\u6570\u636e\u91cd\u4f20
-	int		Sendstate;		//\u53d1\u9001\u7ed3\u679c
-	int 		ReciveState;		//\u63a5\u6570\u636e\u72b6\u6001 0 \Uffffffff
-	int 		DoorOpen;		//是否开闸 0 不开 1 开
-	int 		AbnormalID;		//续传ID
-}HttpTransRecord_t;
+    int 		 HttpID;		//唯一的ID
+    char		PlateNumber[16];	//车牌号码
+    char 		RecDateTime[20];	//识别时间
+    char		TransDateTime[20];	//传输时间
+    int 		FullImageSize;		//全景图大小
+    int 		PlateImageSize;		//\u8f66\u724c\u56fe\u5927\u5c0f
+    int 		IPtype;			//\u4f7f\u7528IP\u8fd8\u662f\u57df\u540d 0 IP  1\u57df\u540d
+    char 		IP_Domain[50];		//IP \u6216 \u57df\u540d
+    int 		Port;			//\u7aef\u53e3
+    char 		Path[200];		//\u670d\u52a1\u7a0b\u5e8f\u8def\u5f84
+    int 		TransType;		//\u4f20\u9001\u65b9\u5f0f  0 \u5373\u65f6\u63a8\u9001\u6570\u636e 1 \u5f02\u5e38\u6570\u636e\u91cd\u4f20
+    int		Sendstate;		//\u53d1\u9001\u7ed3\u679c
+    int 		ReciveState;		//\u63a5\u6570\u636e\u72b6\u6001 0 \Uffffffff
+    int 		DoorOpen;		//是否开闸 0 不开 1 开
+    int 		AbnormalID;		//续传ID
+} HttpTransRecord_t;
 
 
 //add by yiweijioa@2019-06-17
 typedef struct http_trans_record_t
 {
-	int 		http_id;			//唯一的ID
-	char		plate_number[16];	//车牌号码
-	char 		reco_time[20];		//识别时间
-	char		trans_time[20];		//传输时间
-	int 		full_image_size;	//全景图大小
-	int 		plate_image_size;	//车牌图像大小
-	char 		url_string[256];	//url
-	int 		result_type;		//识别结果类型
-	int			request_result;		//请求结果
-	int 		respond_state;		//回应数据状态
-	int 		barrier_control;		//是否开闸
-	int 		abnormal_id;		//异常续传ID
-}http_trans_record_t;
+    int 		http_id;			//唯一的ID
+    char		plate_number[16];	//车牌号码
+    char 		reco_time[20];		//识别时间
+    char		trans_time[20];		//传输时间
+    int 		full_image_size;	//全景图大小
+    int 		plate_image_size;	//车牌图像大小
+    char 		url_string[256];	//url
+    int 		result_type;		//识别结果类型
+    int			request_result;		//请求结果
+    int 		respond_state;		//回应数据状态
+    int 		barrier_control;		//道闸控制
+    int 		abnormal_id;		//异常续传ID
+} http_trans_record_t;
 
 
 
@@ -60,46 +60,46 @@ typedef struct http_trans_record_t
 ******************************/
 typedef struct Reco_Result
 {
-	int 		 ID;
-	int          carBright;              //车身亮度（预留）
-	int          carColor;               //车身颜色（预留）
-	int          colorValue;             //颜色值（预留）
-	int          confidence;             //可信度
-	int          direction;              //行驶方向
-	char    	 imagePath[256];              //图片路径（预留）
-	char     	 license[16];                //车牌号，(不可为空)
-	int          RECT_bottom;            //车牌在图片中的矩形坐标,下
-	int          RECT_left;              //车牌在图片中的矩形坐标,左
-	int          RECT_right;             //车牌在图片中的矩形坐标,右
-	int          RECT_top;               //车牌在图片中的矩形坐标,上
-	int          timeUsed;               //识别耗时
-	int          triggerType;            //触发类型
-	int          type;                   //车牌类型
-	char     	 platecolor[6];             //车牌颜色
-	int          carLogo;                //车标
-	int          CarType;                //车型
-	int          plateBright;            //车牌亮度
-	char     	 recotime[20];               //识别时间 (不可为空)
-	char   		 FullImagePath[256];          //大图存储路径
-	char   		 PlateImagePath[256];         //小图存储路径
-	int          WhiteListEnable;        //白名单是否启用  0未启用  1启用
-	int          TimeMatchEable;         //白名单是否启用时间匹配  0未启用1启用
-	char     	 WhiteListCreateTime[20];        //白名单创建时间
-	char     	 WhiteListStartTime[20];        //白名单开始生效时间
-	char     	 WhiteListEndTime[20];        //白名单过期时间
-	int          BlackList;              //是否被设置为黑名单
-	int          OpenDoor;               //白名单判断结果，是否自动抬杆放行
-	int          TimeCheck;              //白名单判断结果，是否在有效期内
-	int			 InteriorCar;		    //是否为内部车
-}Reco_Result;
+    int 		 ID;
+    int          carBright;              //车身亮度（预留）
+    int          carColor;               //车身颜色（预留）
+    int          colorValue;             //颜色值（预留）
+    int          confidence;             //可信度
+    int          direction;              //行驶方向
+    char    	 imagePath[256];              //图片路径（预留）
+    char     	 license[16];                //车牌号，(不可为空)
+    int          RECT_bottom;            //车牌在图片中的矩形坐标,下
+    int          RECT_left;              //车牌在图片中的矩形坐标,左
+    int          RECT_right;             //车牌在图片中的矩形坐标,右
+    int          RECT_top;               //车牌在图片中的矩形坐标,上
+    int          timeUsed;               //识别耗时
+    int          triggerType;            //触发类型
+    int          type;                   //车牌类型
+    char     	 platecolor[6];             //车牌颜色
+    int          carLogo;                //车标
+    int          CarType;                //车型
+    int          plateBright;            //车牌亮度
+    char     	 recotime[20];               //识别时间 (不可为空)
+    char   		 FullImagePath[256];          //大图存储路径
+    char   		 PlateImagePath[256];         //小图存储路径
+    int          WhiteListEnable;        //白名单是否启用  0未启用  1启用
+    int          TimeMatchEable;         //白名单是否启用时间匹配  0未启用1启用
+    char     	 WhiteListCreateTime[20];        //白名单创建时间
+    char     	 WhiteListStartTime[20];        //白名单开始生效时间
+    char     	 WhiteListEndTime[20];        //白名单过期时间
+    int          BlackList;              //是否被设置为黑名单
+    int          OpenDoor;               //白名单判断结果，是否自动抬杆放行
+    int          TimeCheck;              //白名单判断结果，是否在有效期内
+    int			 InteriorCar;		    //是否为内部车
+} Reco_Result;
 
 /*异常信息表***************
 ******************************/
 typedef struct Abnormal_Result
 {
-	Reco_Result * pRecoResult;   // 识别暂存信息
-	int nServerNum; // 服务器编码
-}Abnormal_Result;
+    Reco_Result * pRecoResult;   // 识别暂存信息
+    int nServerNum; // 服务器编码
+} Abnormal_Result;
 
 /////////////////////////////////////////////以下是操作函数
 

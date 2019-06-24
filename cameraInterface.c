@@ -15,8 +15,6 @@ static RkSerialHandle rs485handle = 0;
 int init_interface()
 {
 	int ret = -1;
-	
-
 	//SDK 初始化
 	ret = rk_sdk_init();
 	if(ret != 0)
@@ -27,6 +25,7 @@ int init_interface()
 	//注册回调函数
 	rk_sdk_recoResultEvent(result_store_callback);
 	//注册IO的回调函数
+	rk_sdk_configResultEvent(io_report_callback);
 
 	//链接相机
 	while(g_rkhandle == 0)
@@ -254,9 +253,9 @@ void http_config_get(http_param_s *http_info)
 	//strcpy(http_info->main_server.url_string,"allinaent.e1.luyouxia.net:29961/camera/lprcresult");
 	//strcpy(http_info->main_server.url_string,"172.16.10.88:8080/test1");
 	//strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/HTTP_Test1.cgi");
-	//strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/http_barrier_rs485.cgi");
+	strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/http_barrier_rs485.cgi");
 	//strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/barrier_close_triger.cgi");
-	strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/gpio_random.cgi");
+	//strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/gpio_random.cgi");
 
 
 	return ;

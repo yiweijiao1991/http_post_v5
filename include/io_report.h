@@ -40,6 +40,6 @@ int  io_report_init(io_report_ptr_s *io_report_ptr);
 */
 void io_report_free(io_report_ptr_s *io_report_ptr);
 
-void  io_report_callback (RkSdkHandle handle, http_io_state_s *io_state, void *use_ptr);
+void  io_report_callback (RkSdkHandle handle, RK_Gpio *gpio, void *usePtr);
 
 #endif

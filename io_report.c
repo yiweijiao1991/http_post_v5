@@ -15,7 +15,7 @@
 
 extern RK_DeviceInfo g_deviceInfo;
 extern http_param_s g_http_cfg;//HTTP配置信息
-
+extern io_report_ptr_s g_gpio_report_mem_ptr;//gpio 内存指针
 
 
 /*
@@ -97,7 +97,7 @@ void io_report_free(io_report_ptr_s *io_report_ptr)
 返回值:
 	无
 */
-void io_report(io_report_ptr_s *io_report_ptr,http_io_state_s *io_state,http_param_s    http_config)
+void io_report(io_report_ptr_s *io_report_ptr,RK_Gpio * io_state,http_param_s    http_config)
 {
 	int ret = 0;
 	int res;
@@ -107,10 +107,11 @@ void io_report(io_report_ptr_s *io_report_ptr,http_io_state_s *io_state,http_par
 	if(!io_report_ptr->http_curl_handle || !io_report_ptr->http_recive_data || !io_report_ptr->http_send_buff)
 			return ;
 
-	log_write("get io state from camera,in1:%d in2:%d in3:%d in4:%d",io_state->gpio_in_1,
-																	 io_state->gpio_in_2,
-																	 io_state->gpio_in_3,
-																	 io_state->gpio_in_4);
+	log_write("get io state from camera,in1:%d in2:%d in3:%d in4:%d userkey:%d",io_state->in1,
+																	 io_state->in2,
+																	 io_state->in3,
+																	 io_state->in4,
+																	 io_state->userkey);
 	//判断是否使用ssl
 	if(http_config.is_ssl_connect)
 		sprintf(url_str,"https://%s",http_config.main_server.url_string);
@@ -218,11 +219,11 @@ void io_report(io_report_ptr_s *io_report_ptr,http_io_state_s *io_state,http_par
 	}
 }
 
-void  io_report_callback (RkSdkHandle handle, http_io_state_s *io_state, void *use_ptr)
+void  io_report_callback (RkSdkHandle handle, RK_Gpio *gpio, void *usePtr)
 {
 	//判断是否由HTTP服务打开
 	if(g_http_cfg.main_server.enable && g_http_cfg.main_server.io_report_enable)
-		io_report((io_report_ptr_s *)use_ptr,io_state,g_http_cfg);
+		io_report(&g_gpio_report_mem_ptr,gpio,g_http_cfg);
 	return ;
 }
 

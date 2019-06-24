@@ -1,6 +1,7 @@
 #ifndef __CAMERA_INTERFACE_H__
 #define __CAMERA_INTERFACE_H__
 #include "RK_LPRClientSDK.h"
+#include "io_report.h"
 //HTTP 图片存储路径
 #define FLASH_FULLIMAGE_PATH  "/root/ipc/HTTP_DIR/HTTPImage/FullImage/"
 #define FLASH_PLATEIMAGE_PATH "/root/ipc/HTTP_DIR/HTTPImage/PlatelImage/"

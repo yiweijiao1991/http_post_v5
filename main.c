@@ -5,6 +5,7 @@
 #include "cameraInterface.h"
 #include "thr_http_keep_alive.h"
 #include "thr_http_report.h"
+#include "io_report.h"
 #include "pthread.h"
 #include "log.h"
 
@@ -14,6 +15,7 @@
 http_param_s g_http_cfg;//HTTP配置信息
 RK_DeviceInfo g_deviceInfo;
 int g_thread_quit = 0;//线程退出标志 0 不退出 1 退出
+io_report_ptr_s g_gpio_report_mem_ptr;;
 
 void config_signal_deal(int signal_num)
 {
@@ -40,6 +42,16 @@ int main()
 		return -1;
 	}
 	log_write("********http_proc(%s) start*********",_VERSION_);
+
+
+
+	ret = io_report_init(&g_gpio_report_mem_ptr);
+	if(ret != 0)
+	{
+		log_write("rk sdk gpio report init  faile ret = %d",ret);
+		return -1;
+	}
+
 	ret = init_interface();
 	if(ret < 0)
 	{
@@ -79,5 +91,6 @@ int main()
 
 	log_write("exit");
 	log_exit();
+	io_report_free(&g_gpio_report_mem_ptr);
 	return 0;
 }

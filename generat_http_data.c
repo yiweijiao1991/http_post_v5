@@ -390,7 +390,7 @@ get_io_state_json
 	-4 json 存储区 大小不够
     0成功
 */
-int get_io_state_json(RK_DeviceInfo *device_info,http_io_state_s *io_state,char * json_buff,int json_buff_max_size)
+int get_io_state_json(RK_DeviceInfo *device_info,RK_Gpio * io_state,char * json_buff,int json_buff_max_size)
 {
 	cJSON * root=NULL;
 	cJSON *gpio_state =NULL;
@@ -417,14 +417,15 @@ int get_io_state_json(RK_DeviceInfo *device_info,http_io_state_s *io_state,char 
 	//获取SN
 	cJSON_AddStringToObject(gpio_state,"rom_id",device_info->roomID);
 	cJSON_AddStringToObject(gpio_state,"sn",device_info->sn);
-	cJSON_AddNumberToObject(gpio_state,"gpio_in1_statue”",io_state->gpio_in_1);
-	cJSON_AddNumberToObject(gpio_state,"gpio_in2_statue”",io_state->gpio_in_2);
-	cJSON_AddNumberToObject(gpio_state,"gpio_in3_statue”",io_state->gpio_in_3);
-	cJSON_AddNumberToObject(gpio_state,"gpio_in4_statue”",io_state->gpio_in_4);
+	cJSON_AddNumberToObject(gpio_state,"gpio_in1_statue",io_state->in1);
+	cJSON_AddNumberToObject(gpio_state,"gpio_in2_statue",io_state->in2);
+	cJSON_AddNumberToObject(gpio_state,"gpio_in3_statue",io_state->in3);
+	cJSON_AddNumberToObject(gpio_state,"gpio_in4_statue",io_state->in4);
+	cJSON_AddNumberToObject(gpio_state,"gpio_userkey_statue",io_state->userkey);
 	//时间戳后面添加
 	
 	//组织root
-	cJSON_AddItemToObject(root,"gpio_state ",gpio_state);
+	cJSON_AddItemToObject(root,"gpio_state",gpio_state);
 	
 	p_data = cJSON_Print(root);
 	if(NULL == p_data)
