@@ -61,7 +61,7 @@ int http_post(CURL *curl,char* url_str,char*data,http_recive_data_s *recivedata,
 	headers=curl_slist_append(headers, head_str);
 	curl_easy_setopt( curl,CURLOPT_CONNECTTIMEOUT, 5);
 	curl_easy_setopt( curl, CURLOPT_TIMEOUT,session_timeout);//接收数据时超时设置，如果n秒内数据未接收完，直接退出
-	curl_easy_setopt( curl, CURLOPT_VERBOSE, 1L ); //在屏幕打印请求连接过程和返回http数据
+	//curl_easy_setopt( curl, CURLOPT_VERBOSE, 1L ); //在屏幕打印请求连接过程和返回http数据
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);//匿名ssl
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
    

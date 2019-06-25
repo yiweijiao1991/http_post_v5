@@ -334,7 +334,7 @@ int response_handle(unsigned char * data,int *barrier_control_result)
 		{
 			cJSON *whitelist_subitem =NULL;
 			white_list_data_s white_list_temp;
-			array_number = cJSON_GetArraySize(rs485_data);
+			array_number = cJSON_GetArraySize(whitelist_data);
 			int white_list_operation = 0;
 			for(i = 0;i < array_number; i++)
 			{

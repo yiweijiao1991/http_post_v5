@@ -481,6 +481,10 @@ int http_realtime_result_send(Reco_Result    *result,
 				{
 					if(http_recive_data->datalen > 0)
 					{
+						log_write("http send realtime result [%s] to main server[%s] get response :\n%s",http_result.plate_info.license,
+													     http_config.main_server.url_string,
+													     http_recive_data->data);
+				if(http_config.http_control_enable)
 						ret = response_handle(http_recive_data->data,&barrier_control_result);
 						//根据http处理结果进行插入数据库写日志之类的操作
 						if(ret == 0)

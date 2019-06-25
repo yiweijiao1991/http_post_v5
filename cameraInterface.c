@@ -238,7 +238,7 @@ void http_config_get(http_param_s *http_info)
 	//rk_sdk_config_http_get(g_rkhandle,http_info);
 	memset(http_info,0,sizeof(http_param_s));
 	//test
-	http_info->is_ssl_connect = 0;
+/*	http_info->is_ssl_connect = 0;
 	http_info->response_affirm_enable = 1;
 	http_info->characters_type = 0;
 	http_info->offline_continuingly_en = 0;
@@ -253,9 +253,44 @@ void http_config_get(http_param_s *http_info)
 	//strcpy(http_info->main_server.url_string,"allinaent.e1.luyouxia.net:29961/camera/lprcresult");
 	//strcpy(http_info->main_server.url_string,"172.16.10.88:8080/test1");
 	//strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/HTTP_Test1.cgi");
-	strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/http_barrier_rs485.cgi");
+	//strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/http_barrier_rs485.cgi");
 	//strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/barrier_close_triger.cgi");
 	//strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/gpio_random.cgi");
+
+	strcpy(http_info->main_server.url_string,"101.200.182.238:80/cgi-bin/whitelist_update.cgi");
+*/
+
+
+
+
+	RK_HttpParam http_paremer;
+	memset(&http_paremer,0,sizeof(RK_HttpParam));
+	rk_sdk_config_http_get(g_rkhandle,&http_paremer);
+
+	http_info->is_ssl_connect = 0;
+	http_info->response_affirm_enable =  http_paremer.main_server.reco_result.response_affirm;
+	http_info->characters_type = 0;
+	http_info->offline_continuingly_en = http_paremer.offline_continuingly_en;
+	http_info->http_control_enable =1;
+
+	http_info->main_server.enable =http_paremer.main_server.enable;
+	http_info->main_server.full_image_report_enable = http_paremer.main_server.reco_result.full_image;
+
+	http_info->main_server.full_image_report_enable = http_paremer.main_server.reco_result.plate_image;
+	http_info->push_num = 3;
+	http_info->main_server.io_report_enable = 1;
+	http_info->main_server.keepalive_enable = http_paremer.main_server.keeplive.enable;
+
+	http_info->main_server.keeplive_interval= http_paremer.main_server.keeplive.keeplive_interval;
+	http_info->session_timeout = http_paremer.main_server.reco_result.response_timeout;
+
+	char url[512] = {0};
+	if( http_paremer.main_server.ip_domain.select == 0)
+		sprintf(url,"%s:%d/%s",http_paremer.main_server.ip_domain.ip,http_paremer.main_server.port,http_paremer.main_server.push_path);
+	else 
+		sprintf(url,"%s:%d/%s",http_paremer.main_server.ip_domain.domain,http_paremer.main_server.port,http_paremer.main_server.push_path);
+	strcpy(http_info->main_server.url_string,url);
+
 
 
 	return ;

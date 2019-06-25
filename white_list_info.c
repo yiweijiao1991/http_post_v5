@@ -160,6 +160,8 @@ int white_list_update(white_list_data_s *white_list_data)
 	white_list_updata_info.iBlackList = white_list_data->isblack_list;
 
 	ret = WTY_WhiteListUpdateVehicleByPlateId(LOCAL_SERVER_IP,white_list_updata_info);
+
+
 	if(ret == 0)
 		return 1;
 	return -1;
