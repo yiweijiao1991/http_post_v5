@@ -169,6 +169,7 @@ int http_trans_record(http_server_info_s *http_server_info,
 		      		  int result_type,
 		      		  int abnormal_id)
 {
+#if 0
 	http_trans_record_t http_trans_data ={0};//数据库存储数据
 	/****获取时间***/
 	time_t tt;
@@ -199,7 +200,74 @@ int http_trans_record(http_server_info_s *http_server_info,
 	http_trans_data.barrier_control = barrier_control;	//开闸情况
 	http_trans_data.abnormal_id = abnormal_id;
 	//插入数据库	后面添加
-	
+#endif
+	HttpTransRecord_t record_data ={0};//数据库存储数据
+	/****获取时间***/
+	time_t tt;
+	struct tm *t;
+	char timebuf[64];
+	char temp_ip_domain[512] = {0}; //IP域名存储
+	char path_str[512] = {0};//推送路径
+	char port_str[512] = {0};//端口
+	char *p = NULL;//临时指针
+	int a,b,c,d;//临时变量
+	int ip_type = 0;//0 ip 1 域名
+
+	time(&tt);
+	t = localtime(&tt); 
+	sprintf(&timebuf[0],"%04d-%02d-%02d %02d:%02d:%02d",
+			t->tm_year + 1900, t->tm_mon+1, t->tm_mday,
+			t->tm_hour, t->tm_min, t->tm_sec);
+
+	if(strlen(platenum) > 0)
+		strcpy(record_data.PlateNumber,platenum);//车牌
+	else
+		strcpy(record_data.PlateNumber,"NOPlate");//车牌
+
+	strcpy(record_data.RecDateTime,reco_time);//识别时间
+	strcpy(record_data.TransDateTime,timebuf);//当前传送时间
+	record_data.FullImageSize = full_image_size;//大图大小
+	record_data.PlateImageSize = plate_image_size;//小图大小
+
+//分解url
+
+	p = strchr(http_server_info->url_string,'/');
+	if(p)
+	{
+		memcpy(temp_ip_domain,http_server_info->url_string,(p-http_server_info->url_string));
+		memcpy(path_str,p,strlen(p));	
+		p = strchr(temp_ip_domain,':');
+		if(p)
+		{
+			memcpy(port_str,p+1,strlen(p+1));
+			*p = 0;
+		}
+	}
+	//判断是IP还是域名
+
+	if(sscanf(temp_ip_domain, "%d.%d.%d.%d ",&a,&b,&c,&d)==4 &&  a>=0  &&  a<=255 &&  b>=0  &&  b<=255 &&  c>=0  &&  c<=255 &&  d>=0  &&  d<=255) 
+	{
+		ip_type = 0;
+	}else 
+	{
+		ip_type = 1;
+	}
+
+	record_data.IPtype = ip_type;//域名还是IP
+	strcpy(record_data.IP_Domain,temp_ip_domain);
+	record_data.Port = atoi(port_str);//端口
+	strcpy(record_data.Path,path_str);// 路径
+	record_data.TransType = result_type;//传送类型  0 即时推送数据 1 异常数据重传
+	record_data.Sendstate = request_result;	//发送结果
+	record_data.ReciveState = respond_state;	//接受结果
+	record_data.DoorOpen = barrier_control;	//开闸情况
+	record_data.AbnormalID = abnormal_id;
+	//插入数据库	
+	if(0 > YBDB_HttpTransRecord_Insert(LOCAL_SERVER_IP,&record_data))
+	{
+		log_write("http save trans record into database error");
+	}
+
 	return 0;
 }
 /*
@@ -653,7 +721,7 @@ int http_realtime_result_send(Reco_Result    *result,
 					res,
 					recive_state,
 					barrier_control_result,
-					RESULT_TYPE_ABNORMAL,
+					RESULT_TYPE_REALTIME,
 					0
 					);	
 		}	
@@ -774,10 +842,15 @@ int http_abnormal_result_send(http_image_t	*http_image_bin,
 					recive_state = RECIVE_STATE_DATA_DONT_NEED_RESPOND;	
 				}else
 				{
+
 					//发送失败，后面处理
 					log_write("http send abnormal result [%s] to [%s] faile ret = %d",http_result.plate_info.license,
 																					  server_info.url_string,
 																					  res);
+					if(res == 1)
+						res = -999;
+					else if(res > 0)
+						res = 0-res;
 					recive_state = RECIVE_STATE_UNKNOWN;
 					ret_value = -1;
 				}
@@ -791,7 +864,7 @@ int http_abnormal_result_send(http_image_t	*http_image_bin,
 						recive_state,
 						-1,
 						RESULT_TYPE_ABNORMAL,
-						0
+						result.ID
 						);
 			}
 

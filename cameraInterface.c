@@ -280,17 +280,38 @@ void http_config_get(http_param_s *http_info)
 	http_info->push_num = 3;
 	http_info->main_server.io_report_enable = 1;
 	http_info->main_server.keepalive_enable = http_paremer.main_server.keeplive.enable;
-
 	http_info->main_server.keeplive_interval= http_paremer.main_server.keeplive.keeplive_interval;
+
 	http_info->session_timeout = http_paremer.main_server.reco_result.response_timeout;
 
 	char url[512] = {0};
 	if( http_paremer.main_server.ip_domain.select == 0)
-		sprintf(url,"%s:%d/%s",http_paremer.main_server.ip_domain.ip,http_paremer.main_server.port,http_paremer.main_server.push_path);
+		sprintf(url,"%s:%d%s",http_paremer.main_server.ip_domain.ip,http_paremer.main_server.port,http_paremer.main_server.push_path);
 	else 
-		sprintf(url,"%s:%d/%s",http_paremer.main_server.ip_domain.domain,http_paremer.main_server.port,http_paremer.main_server.push_path);
+		sprintf(url,"%s:%d%s",http_paremer.main_server.ip_domain.domain,http_paremer.main_server.port,http_paremer.main_server.push_path);
 	strcpy(http_info->main_server.url_string,url);
 
+
+	http_info->standby_server[0].enable =http_paremer.standby_server1.enable;
+	http_info->standby_server[0].full_image_report_enable = http_paremer.standby_server1.reco_result.full_image;
+	http_info->standby_server[0].full_image_report_enable = http_paremer.standby_server1.reco_result.plate_image;
+
+	if( http_paremer.standby_server1.ip_domain.select == 0)
+		sprintf(url,"%s:%d%s",http_paremer.standby_server1.ip_domain.ip,http_paremer.standby_server1.port,http_paremer.standby_server1.push_path);
+	else 
+		sprintf(url,"%s:%d%s",http_paremer.standby_server1.ip_domain.domain,http_paremer.standby_server1.port,http_paremer.standby_server1.push_path);
+	strcpy(http_info->standby_server[0].url_string,url);
+
+
+	http_info->standby_server[1].enable =http_paremer.standby_server2.enable;
+	http_info->standby_server[1].full_image_report_enable = http_paremer.standby_server2.reco_result.full_image;
+	http_info->standby_server[1].full_image_report_enable = http_paremer.standby_server2.reco_result.plate_image;
+
+	if( http_paremer.standby_server2.ip_domain.select == 0)
+		sprintf(url,"%s:%d%s",http_paremer.standby_server2.ip_domain.ip,http_paremer.standby_server2.port,http_paremer.standby_server2.push_path);
+	else 
+		sprintf(url,"%s:%d%s",http_paremer.standby_server2.ip_domain.domain,http_paremer.standby_server2.port,http_paremer.standby_server2.push_path);
+	strcpy(http_info->standby_server[1].url_string,url);
 
 
 	return ;
