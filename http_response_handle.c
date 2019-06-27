@@ -364,7 +364,7 @@ int response_handle(unsigned char * data,int *barrier_control_result)
 						//时间匹配使能
 						if(cJSON_IsString(cJSON_GetObjectItem(whitelist_subitem,"time_match")))
 						{
-							if(strcmp("enable",cJSON_GetObjectItem(whitelist_subitem,"time_match")->valuestring))
+							if(strcmp("enable",cJSON_GetObjectItem(whitelist_subitem,"time_match")->valuestring) == 0)
 								white_list_temp.time_match = 1;
 							else
 								white_list_temp.time_match = 0;
@@ -390,7 +390,7 @@ int response_handle(unsigned char * data,int *barrier_control_result)
 						//黑名单
 						if(cJSON_IsString(cJSON_GetObjectItem(whitelist_subitem,"is_black_list")))
 						{
-							if(strcmp("yes",cJSON_GetObjectItem(whitelist_subitem,"is_black_list")->valuestring))
+							if(strcmp("yes",cJSON_GetObjectItem(whitelist_subitem,"is_black_list")->valuestring) == 0)
 								white_list_temp.isblack_list = 1;
 							else
 								white_list_temp.isblack_list = 0;

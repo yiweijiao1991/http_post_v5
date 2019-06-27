@@ -3,13 +3,19 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <time.h>
+ #include <unistd.h>
 #ifdef SQLLIST
 #include <sys/time.h>
 #endif
 #include "white_list_info.h"
 #include "WTYSDK_WhiteList.h"
 #include "log.h"
-
+//用于暂存白名单查询出的车辆信息
+typedef struct carinfo_temp_t
+{
+	WTYSDK_WLIST_VEHICLE carinfo;//车辆信息
+	int is_select_ok;//查询是否结束
+}carinfo_temp_t;
 
 /*
 函数名：whiteListInfo_search
@@ -132,6 +138,43 @@ int white_list_add(white_list_data_s *white_list_data)
 	}
 	return ret;
 }
+
+
+/*
+ *@function name: 
+	select_white_list_info_call
+ *@Author: yiweijiao
+ *@Date: 2019-06-27 11:34:19
+ *@describtion: 
+	查询车辆信息的回调函数
+ *@parameter: 
+ *@return: 
+*/
+
+void select_white_list_info_call(WTYSDK_WLIST_CB_TYPE type, WTYSDK_WLIST_VEHICLE *pLP,
+				   WTYSDK_WLIST_CUSTOMER *pCustomer,
+				   WTYSDK_WLIST_TRAFFIC_INFO *pTrafficInfo,
+				  int nTotal,
+				  void *pUserData)
+
+{
+
+	carinfo_temp_t *p = (carinfo_temp_t *)pUserData;
+	if(p)
+	{
+		if(type == WTYSDK_WLIST_CB_TYPE_VEHICLE)
+		{
+
+			if(nTotal > 0 && pLP)
+			{
+
+				memcpy(&(p->carinfo),pLP,sizeof(WTYSDK_WLIST_VEHICLE));
+			}
+		}
+		p->is_select_ok = 1;
+	}
+} 
+
 /*
  *@function name: 
  	white_list_update
@@ -145,22 +188,72 @@ int white_list_add(white_list_data_s *white_list_data)
 	-1 失败
 	1成功
 */
+
+
 int white_list_update(white_list_data_s *white_list_data)
 {
-	WTYSDK_WLIST_VEHICLE white_list_updata_info;
+	WTYSDK_WLIST_VEHICLE white_list_updata_info;//更新后的车辆信息
+	static carinfo_temp_t search_carinfo;	//暂存查询出的车辆信息
+	WTY_SDK_VEHICLEQUERYRECORD search_condition;	//查询车辆信息条件
 	int ret = 0;
-	memset(&white_list_updata_info,0,sizeof(WTYSDK_WLIST_VEHICLE));
+	int i = 0;
+	static int is_init = 0;
+	memset(&search_carinfo,0,sizeof(carinfo_temp_t));
+	memset(&search_condition,0,sizeof(WTY_SDK_VEHICLEQUERYRECORD));
 
+	//注册回调函数
+	if(!is_init)
+	{
+		ret = WTYSDK_WhiteListSetQueryCallBack(select_white_list_info_call,(void*)&search_carinfo,LOCAL_SERVER_IP);
+		if(ret != 0)
+		{
+
+				return -1;
+		}
+		is_init = 1;
+	}
+
+	strcpy(search_condition.PlateNumber,white_list_data->plate_number);
+	search_condition.conditionsflag = 4;
+	search_condition.page = 0;
+	search_condition.pageSize = WTYSDK_WLIST_PERPAGE_MAXSIZE;
+	//查询
+	ret = WTY_WhiteListLoadVehicleByPlateId(LOCAL_SERVER_IP,search_condition);
+	if(ret < 0)
+	{
+		return -1;
+	}
+		
+	//等候数据到达
+	for(i = 0;i<10;i++)
+	{
+		if(!search_carinfo.is_select_ok)
+		{
+			usleep(20000);
+
+		}else
+		{
+			break;
+		}
+	}
+	//更改
+	memset(&white_list_updata_info,0,sizeof(WTYSDK_WLIST_VEHICLE));
 	white_list_updata_info.bEnable = 1;
 	strcpy(white_list_updata_info.strPlateID,white_list_data->plate_number);
+
 	white_list_updata_info.bUsingTimeSeg = white_list_data->time_match;
+
 	strcpy(white_list_updata_info.struTMCreate,white_list_data->create_time);
+
 	strcpy(white_list_updata_info.struTMEnable,white_list_data->start_time);
+
 	strcpy(white_list_updata_info.struTMOverdule,white_list_data->end_time);
+
 	white_list_updata_info.iBlackList = white_list_data->isblack_list;
 
-	ret = WTY_WhiteListUpdateVehicleByPlateId(LOCAL_SERVER_IP,white_list_updata_info);
+	white_list_updata_info.uCustomerID = search_carinfo.carinfo.uCustomerID;
 
+	ret = WTY_WhiteListUpdateVehicleByPlateId(LOCAL_SERVER_IP,white_list_updata_info);
 
 	if(ret == 0)
 		return 1;
