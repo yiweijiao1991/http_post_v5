@@ -152,22 +152,19 @@ int white_list_add(white_list_data_s *white_list_data)
 */
 
 void select_white_list_info_call(WTYSDK_WLIST_CB_TYPE type, WTYSDK_WLIST_VEHICLE *pLP,
-				   WTYSDK_WLIST_CUSTOMER *pCustomer,
-				   WTYSDK_WLIST_TRAFFIC_INFO *pTrafficInfo,
-				  int nTotal,
-				  void *pUserData)
+								WTYSDK_WLIST_CUSTOMER *pCustomer,
+								WTYSDK_WLIST_TRAFFIC_INFO *pTrafficInfo,
+								int nTotal,
+								void *pUserData)
 
 {
-
 	carinfo_temp_t *p = (carinfo_temp_t *)pUserData;
 	if(p)
 	{
 		if(type == WTYSDK_WLIST_CB_TYPE_VEHICLE)
 		{
-
 			if(nTotal > 0 && pLP)
 			{
-
 				memcpy(&(p->carinfo),pLP,sizeof(WTYSDK_WLIST_VEHICLE));
 			}
 		}
