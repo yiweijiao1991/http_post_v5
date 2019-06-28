@@ -148,7 +148,7 @@ void io_report(io_report_ptr_s *io_report_ptr,RK_Gpio * io_state,http_param_s   
 					log_write("gpio report to  %s ready handle response",url_str);
 
 					ret = response_handle(io_report_ptr->http_recive_data->data,
-										  &barrier_control_result);
+										  &barrier_control_result,http_config.rs485_delay);
 					if(ret == 0)
 					{
 						//成功

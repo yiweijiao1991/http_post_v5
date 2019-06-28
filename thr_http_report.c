@@ -553,7 +553,7 @@ int http_realtime_result_send(Reco_Result    *result,
 													     http_config.main_server.url_string,
 													     http_recive_data->data);
 				
-						ret = response_handle(http_recive_data->data,&barrier_control_result);
+						ret = response_handle(http_recive_data->data,&barrier_control_result,http_config.rs485_delay);
 						//根据http处理结果进行插入数据库写日志之类的操作
 						if(ret == 0)
 						{

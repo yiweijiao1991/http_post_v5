@@ -268,6 +268,7 @@ void http_config_get(http_param_s *http_info)
 	rk_sdk_config_http_get(g_rkhandle,&http_paremer);
 
 	http_info->is_ssl_connect = 0;
+	http_info->rs485_delay = 150;
 	http_info->response_affirm_enable =  http_paremer.main_server.reco_result.response_affirm;
 	http_info->characters_type = 0;
 	http_info->offline_continuingly_en = http_paremer.offline_continuingly_en;
@@ -276,7 +277,7 @@ void http_config_get(http_param_s *http_info)
 	http_info->main_server.enable =http_paremer.main_server.enable;
 	http_info->main_server.full_image_report_enable = http_paremer.main_server.reco_result.full_image;
 
-	http_info->main_server.full_image_report_enable = http_paremer.main_server.reco_result.plate_image;
+	http_info->main_server.plate_image_report_enable = http_paremer.main_server.reco_result.plate_image;
 	http_info->push_num = 3;
 	http_info->main_server.io_report_enable = 1;
 	http_info->main_server.keepalive_enable = http_paremer.main_server.keeplive.enable;

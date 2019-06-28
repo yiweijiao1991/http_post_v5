@@ -373,6 +373,7 @@ typedef struct http_param_s{
 	 int characters_type;								//汉字字符编码 0 GB2312 1 UTF-8
 	 int is_ssl_connect;								//是否启用ssl
 	 int http_control_enable;							//http控制输出是否启用
+	 int rs485_delay;									//rs485单条透传的延时
 	 int response_affirm_enable;						//回应确认包使能
 	 http_server_info_s		main_server;
 	 http_server_info_s 	standby_server[2];

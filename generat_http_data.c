@@ -199,6 +199,8 @@ int  get_result_json_string(http_param_s *http_cfg,
 
 	cJSON_AddItemToObject(plate_info,"result",result);
 	cJSON_AddStringToObject(plate_info,"seriaIno",device_info->roomID);
+	cJSON_AddStringToObject(plate_info,"romid",device_info->roomID);
+	cJSON_AddStringToObject(plate_info,"sn",device_info->sn);
 
 	if(http_cfg->data_type == 0 || http_cfg->data_type == 1|| http_cfg->data_type == 2)
 	{

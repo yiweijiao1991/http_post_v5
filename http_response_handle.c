@@ -2,6 +2,7 @@
 #include <stdlib.h> 
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "http_response_handle.h"
 #include "cJSON.h"
@@ -21,6 +22,28 @@ enum  WHITE_LIST_OPERATION{
 	WHTTE_LIST_DELETE,		//删除
 	WHITE_LIST_DELETE_ALL	//清空
 };
+/*
+ *@function name: 
+	microseconds_sleep
+ *@Author: yiweijiao
+ *@Date: 2019-06-28 13:34:18
+ *@describtion: 
+	延时函数
+ *@parameter:
+	uSec[in]:延时的毫秒数
+ *@return:
+	无
+*/
+void microseconds_sleep(unsigned long uSec)
+{
+  	struct timeval tv;
+    tv.tv_sec=uSec/1000000;
+    tv.tv_usec=uSec%1000000;
+    int err;
+    do{
+        err=select(0,NULL,NULL,NULL,&tv);
+    }while(err<0 && errno==EINTR);
+}
 
 /*
 函数说明:
@@ -193,14 +216,15 @@ static int white_list_handle(int operation,white_list_data_s *white_list_data)
 	处理http回应数据
 参数:
 	data[in]:http回传的数据
-	barrier_control_result[out]:道闸是控制结果
+	barrier_control_result[out]:道闸是控制结果 0落杆 1抬杆 -1 不操作
+	rs485_delay[in]:rs485延时,单位毫秒
 返回值:
 	-1:参数非法
 	-2:解析json结构失败
 	-3:获取Response节点失败
 	0:成功
 */
-int response_handle(unsigned char * data,int *barrier_control_result)
+int response_handle(unsigned char * data,int *barrier_control_result,int rs485_delay)
 {	
 	cJSON * root = NULL;
 	cJSON * response=NULL;
@@ -306,7 +330,7 @@ int response_handle(unsigned char * data,int *barrier_control_result)
 						//调用接口进行透明传输
 						rs485_out(cJSON_GetObjectItem(rs485_subitem,"data")->valuestring);
 						//延时	
-						usleep(50000);
+						microseconds_sleep(rs485_delay);
 					}				
 				}
 

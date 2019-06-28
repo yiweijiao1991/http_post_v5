@@ -3,6 +3,21 @@
 
 #include "include/http_post_data.h"
 
+/*
+ *@function name: 
+ 	write_data
+ *@Author: yiweijiao
+ *@Date: 2019-06-28 16:55:48
+ *@describtion: 
+	curl获取http回应数据的回调函数，当有数据回来的时候会调用该函数（数据多的时候有可能一次请求多次回调）
+ *@parameter: 
+	ptr[in]:数据指针
+	size[in]:数据快数量
+	nmemb[in]:数据快大小
+	userptr[in]:用户指针
+ *@return: 
+	数据大小
+*/
 size_t write_data(void *ptr, size_t size, size_t nmemb, void *userptr) 
 {
    
@@ -17,13 +32,36 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *userptr)
 
 	return size*nmemb;
 }
-
+/*
+ *@function name: 
+	http_init
+ *@Author: yiweijiao
+ *@Date: 2019-06-28 16:58:13
+ *@describtion: 
+	初始化curl
+ *@parameter: 
+	无
+ *@return: 
+	curl操作句柄
+	null失败
+*/
 CURL * http_init()
 {
 	CURL *curl = NULL;
 	curl = curl_easy_init();
 	return curl;
 }
+/*
+ *@function name: 
+	http_clean
+ *@Author: yiweijiao
+ *@Date: 2019-06-28 16:59:02
+ *@describtion: 
+	关闭curl并释放资源
+ *@parameter: 
+	curl[in]:curl句柄
+ *@return: 
+*/
 void http_clean(CURL *curl)
 {
 	if(curl)
@@ -33,7 +71,25 @@ void http_clean(CURL *curl)
 	}
 	 
 }
-
+/*
+ *@function name: 
+	http_post
+ *@Author: yiweijiao
+ *@Date: 2019-06-28 16:58:52
+ *@describtion: 
+	推送http post请求 并获取回应信息（连接服务器超时时间为5秒回话时间用户自己设定）
+ *@parameter: 
+	curl[in]:curl句柄
+	url_str[in]:url
+	data[in]:要发送的数据
+	recivedata[in]:接受数据结构体
+	session_timeout[in]:连接成功之后的回话时间
+	characters_type[in]:字符编码 0 GB2312  1UTF-8
+ *@return: 
+	-1参数错误
+	0成功
+	>0错误代码
+*/
 int http_post(CURL *curl,char* url_str,char*data,http_recive_data_s *recivedata,int session_timeout,int characters_type)
 {
 	 CURLcode res;

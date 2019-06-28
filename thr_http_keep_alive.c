@@ -76,7 +76,7 @@ void http_keep_alive_handle(http_recive_data_s *http_recive_data,
 			{
 				if(http_recive_data->datalen > 0)
 				{
-					ret = response_handle(http_recive_data->data,&barrier_control_result);
+					ret = response_handle(http_recive_data->data,&barrier_control_result,http_config.rs485_delay);
 					if(ret == 0)
 					{
 						//成功
