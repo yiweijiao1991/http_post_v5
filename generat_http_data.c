@@ -342,6 +342,7 @@ int get_keepalive_json(RK_DeviceInfo *device_info,char * json_buff,int json_buff
 	//获取SN
 	cJSON_AddStringToObject(keep_alive,"ROMID",device_info->roomID);
 	cJSON_AddStringToObject(keep_alive,"SN",device_info->sn);
+	cJSON_AddStringToObject(keep_alive,"ipaddr",device_info->ip);
 
 	//组织root
 	cJSON_AddItemToObject(root,"KeepAlive",keep_alive);
@@ -419,6 +420,7 @@ int get_io_state_json(RK_DeviceInfo *device_info,RK_Gpio * io_state,char * json_
 	//获取SN
 	cJSON_AddStringToObject(gpio_state,"rom_id",device_info->roomID);
 	cJSON_AddStringToObject(gpio_state,"sn",device_info->sn);
+	cJSON_AddStringToObject(gpio_state,"ipaddr",device_info->ip);
 	cJSON_AddNumberToObject(gpio_state,"gpio_in1_statue",io_state->in1);
 	cJSON_AddNumberToObject(gpio_state,"gpio_in2_statue",io_state->in2);
 	cJSON_AddNumberToObject(gpio_state,"gpio_in3_statue",io_state->in3);
@@ -501,6 +503,7 @@ int get_response_json(RK_DeviceInfo *device_info,char * json_buff,int status,int
 
 	cJSON_AddStringToObject(commond_respond,"ROMID",device_info->roomID);
 	cJSON_AddStringToObject(commond_respond,"SN",device_info->sn);
+	cJSON_AddStringToObject(commond_respond,"ipaddr",device_info->ip);
 
 	cJSON_AddNumberToObject(commond_respond,"statue",status);
 	//组织root

@@ -19,6 +19,8 @@
         "wtysdk_whitelist.h": "c",
         "iconv.h": "c",
         "pthread.h": "c",
-        "io_report.h": "c"
+        "io_report.h": "c",
+        "rk_lprclientsdk.h": "c",
+        "rs485.h": "c"
     }
 }

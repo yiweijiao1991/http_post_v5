@@ -181,7 +181,7 @@ void triger_send()
 	}
 	ret = rk_sdk_config_trigger(g_rkhandle);
 
-	if(ret < 0)
+	if(ret == 0)
 		log_write("triger send success");
 	return ;
 }
