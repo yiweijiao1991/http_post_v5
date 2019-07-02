@@ -550,10 +550,17 @@ int http_realtime_result_send(Reco_Result    *result,
 				{
 					if(http_recive_data->datalen > 0)
 					{
-						log_write("http send realtime result [%s] to main server[%s] get response :\n%s",http_result.plate_info.license,
-													     http_config.main_server.url_string,
-													     http_recive_data->data);
-				
+						if(strlen( http_recive_data->data) > 1024*5 - 512)
+						{
+							log_write("http send realtime result [%s] to main server[%s] get response data len is %d:\n",http_result.plate_info.license,
+									http_config.main_server.url_string,
+									http_recive_data->datalen);
+						}else
+						{
+							log_write("http send realtime result [%s] to main server[%s] get response :\n%s",http_result.plate_info.license,
+									http_config.main_server.url_string,
+									http_recive_data->data);
+						}
 						ret = response_handle(http_recive_data->data,&barrier_control_result,http_config.rs485_delay);
 						//根据http处理结果进行插入数据库写日志之类的操作
 						if(ret == 0)
