@@ -33,7 +33,8 @@
 #define RECIVE_STATE_DATA_DONT_NEED_RESPOND 4	//接收回应状态->不处理回应数据
 #define RECIVE_STATE_UNKNOWN 			-1		//接收回应状态->未知
 
-
+#define CLEAN_DATABASE_INTERVAL	1		//清理数据库的间隔单位：秒
+#define CLEAN_IMAGE_INTERVAL	3600	//清理垃圾图片的间隔：秒
 
 
 
@@ -874,6 +875,150 @@ int http_abnormal_result_send(http_image_t	*http_image_bin,
 
 	return ret_value;	
 }
+/*
+ *@function name: 
+	clean_dir
+ *@Author: yiweijiao
+ *@Date: 2019-07-02 16:03:13
+ *@describtion: 
+	清理目录下的图片
+ *@parameter: 
+	root[in]:根目录
+ *@return: 
+	-1:失败
+	0:成功
+*/
+int clean_dir(char *root)
+{
+	DIR *dir;
+	struct dirent * ptr;
+	struct stat file_state; //文件的信息
+	int ret = 0;//返回值
+	char path[256] = {0};
+	time_t ts;
+	time_t yestoday;
+	createDir(root);
+	dir = opendir(root); /* 打开目录*/
+	//获取当前时间
+	ts = time(NULL);
+	//一天前的时间
+	yestoday = ts -3600*24;
+
+	if(dir == NULL)
+	{
+		log_write("clean http dir fail, open dir %s error",root);
+		return -1;
+	}
+	while((ptr = readdir(dir)) != NULL)
+	{
+		//顺序读取每一个目录项；
+		//跳过“..”和“.”两个目录
+		if(strcmp(ptr->d_name,".") == 0 || strcmp(ptr->d_name,"..") == 0)
+		{
+			continue;
+		} 
+		 //获得文件状态信息
+		memset(path,0,256);
+		sprintf(path,"%s%s",root,ptr->d_name);
+		//获取文件信息
+   		ret =stat(path, &file_state);
+		if(ret == 0)
+		{
+			//判断文件是否超时
+			if((file_state.st_ctime < yestoday ) || (file_state.st_ctime > ts ))	
+			{
+				//删除文件
+				remove_file(path);	
+			}
+		}else
+		{
+			log_write("clean http dir faile, get file %s status faile",path);
+		}	
+ 	}
+	closedir(dir);
+	return 0;
+}
+
+void clean_garbage_image()
+{
+	//删除Flash中一天之前图片的数据		
+	clean_dir(FLASH_PLATEIMAGE_PATH);
+	clean_dir(FLASH_FULLIMAGE_PATH);
+	if((access(TFCARD_DEVICE,F_OK))==-1)  
+	{  
+		return;
+	}
+	//删除TF 卡中一天之前的图片
+	clean_dir(TF_PLATEIMAGE_PATH);
+	clean_dir(TF_FULLIMAGE_PATH);	
+}
+
+void clean_database()
+{
+	time_t ts;
+	struct   tm     *ptm; 
+	char timestr[20] = {0};
+	int ret = 0;
+	Reco_Result result = {0};
+
+	//获取当前时间
+	ts = time(NULL);
+	//1天前的时间
+	ts -= 3600*24;
+	//转化成为字符串
+	ptm =  localtime(&ts); 
+	sprintf(timestr,"%04d-%02d-%02d %02d:%02d:%02d",ptm->tm_year+1900,ptm->tm_mon+1,ptm->tm_mday,ptm->tm_hour,ptm->tm_hour,ptm->tm_sec);
+	/*
+	清理数据库中数据清理时间小于timestr的数据 
+	*/
+	//异常表的清理
+	memset(&result,0,sizeof(Reco_Result));
+	ret = YBDB_Abnormal_Result_SelectByTime(LOCAL_SERVER_IP,timestr,&result);
+	
+	if(ret > 0)
+	{
+		//1从数据库中移除
+		ret = YBDB_Abnormal_Result_DeleteByID(LOCAL_SERVER_IP,result.ID);
+		if(ret == 0)
+		{
+			//2.根据图片路径查找异常表中的数据
+			ret = YBDB_Abnormal_Result_JudgeByPath(LOCAL_SERVER_IP,result.FullImagePath);
+			if(ret == 0)
+			{
+				//删除图片
+				if(strlen(result.PlateImagePath) > 0)
+				{
+					remove_file(result.PlateImagePath);	
+				}
+				if(strlen(result.FullImagePath) > 0)
+				{
+					remove_file(result.FullImagePath);		
+				}
+			}
+		}	
+	}
+	//缓冲表的清理
+	memset(&result,0,sizeof(Reco_Result));
+	ret =  YBDB_Reco_Result_SelectByTime(LOCAL_SERVER_IP,timestr,&result);
+	if(ret > 0)
+	{
+		ret = YBDB_Reco_Result_DeleteByID(LOCAL_SERVER_IP,result.ID);
+		if(ret == 0)
+		{
+			//删除图片
+			if(strlen(result.PlateImagePath) > 0)
+			{
+				remove_file(result.PlateImagePath);	
+			}
+			if(strlen(result.FullImagePath) > 0)
+			{
+				remove_file(result.FullImagePath);	
+			}
+		}
+		
+	}
+}
+
 
 /*
 函数名称：Thr_httpReport
@@ -884,15 +1029,17 @@ int http_abnormal_result_send(http_image_t	*http_image_bin,
 void *thr_http_report(void *arg)
 {
 	void 			*status = NULL;
-	Reco_Result		 result = {0};//从数据库中读取出来的数据
+	Reco_Result		 result = {0};			//从数据库中读取出来的数据
 	int 			 ret = 0;
 	time_t 			 abnormal_send_last_time;//断网续传使用的时间值
-	time_t 			 nowtime;		//当前时间
-	http_image_t *	 http_image_bin = NULL;
-	http_image_t * 	 http_image_base64 = NULL;
-	http_recive_data_s *http_recive_data = NULL;
-	CURL 			*http_curl_handle = NULL;
-	http_send_buff_t * http_send_buff = NULL;
+	time_t 			 nowtime;				//当前时间
+	time_t			 last_clean_database_time;//上次清理数据库的时间
+	time_t			 last_clean_image_time;		//上次清理图片的时间
+	http_image_t *	 http_image_bin = NULL;		//http二进制图片缓冲区
+	http_image_t * 	 http_image_base64 = NULL;	//http base64图片缓冲区
+	http_recive_data_s *http_recive_data = NULL;//接收回应数据缓冲区	
+	CURL 			*http_curl_handle = NULL;	//curl句柄
+	http_send_buff_t * http_send_buff = NULL;	//发送缓冲区
 
 	log_write("************ http report thread start *****************");
 
@@ -906,8 +1053,7 @@ void *thr_http_report(void *arg)
 		log_write("http report malloc resource faile");
 		goto http_report_out;
 	}
-		
-	
+
 	http_curl_handle = http_init();
 	if(!http_curl_handle)
 	{
@@ -917,7 +1063,9 @@ void *thr_http_report(void *arg)
 	
 	nowtime = time(NULL);
 	abnormal_send_last_time = time(NULL);
-	
+	last_clean_database_time = time(NULL);
+	last_clean_image_time = time(NULL);
+
 	while(!g_thread_quit)
 	{
 		nowtime = time(NULL);
@@ -936,8 +1084,6 @@ void *thr_http_report(void *arg)
 							  http_send_buff,
 							  http_curl_handle,
 							  g_http_cfg);
-				
-
 			}else 
 			{
 				if(ret < 0)
@@ -954,13 +1100,22 @@ void *thr_http_report(void *arg)
 								  g_http_cfg);
 					abnormal_send_last_time = nowtime; 
 				}
-			
-			}
-			
-			
+			}	
 		}
-		//定时进行过期数据清理，删除超过24小时以外的数据，目前没有实现，后面进行添加
-
+		//定时进行过期数据清理，删除超过24小时以外的数据，
+		if((nowtime - last_clean_database_time) >= CLEAN_DATABASE_INTERVAL || (nowtime - last_clean_database_time) < 0)
+		{
+			//清理数据
+			clean_database();	
+			last_clean_database_time = nowtime;
+		}
+		//定时进行图片清理，删除过期的图片
+		if((nowtime - last_clean_image_time) >= CLEAN_IMAGE_INTERVAL || (nowtime - last_clean_image_time) < 0)
+		{
+			//清理图片
+			clean_garbage_image();	
+			last_clean_image_time = nowtime;
+		}	
 		usleep(1000000);
 	}
 http_report_out:
