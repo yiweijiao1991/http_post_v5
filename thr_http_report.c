@@ -550,9 +550,9 @@ int http_realtime_result_send(Reco_Result    *result,
 				{
 					if(http_recive_data->datalen > 0)
 					{
-						if(strlen( http_recive_data->data) > 1024*5 - 512)
+						if(strlen( http_recive_data->data) > 1024*3 - 512)
 						{
-							log_write("http send realtime result [%s] to main server[%s] get response data len is %d:\n",http_result.plate_info.license,
+							log_write("http send realtime result [%s] to main server[%s] get response data len is %d\n",http_result.plate_info.license,
 									http_config.main_server.url_string,
 									http_recive_data->datalen);
 						}else
@@ -566,21 +566,21 @@ int http_realtime_result_send(Reco_Result    *result,
 						if(ret == 0)
 						{
 							//成功
-							log_write("http resltime result[%s] of main server[%s] response handle success",
+							log_write("http realtime result[%s] of main server[%s] response handle success",
 										http_result.plate_info.license,http_config.main_server.url_string);
 							recive_state = RECIVE_STATE_SUCCESS;
 						}else
 						{
 							if(ret == -1)
-								log_write("http resltime result[%s] of main server[%s] response handle faile,paramer invalid",http_result.plate_info.license,http_config.main_server.url_string);
+								log_write("http realtime result[%s] of main server[%s] response handle faile,paramer invalid",http_result.plate_info.license,http_config.main_server.url_string);
 							else if(ret == -2)
-								log_write("http resltime result[%s] of main server[%s] response handle faile,get json struct error",http_result.plate_info.license,http_config.main_server.url_string);
+								log_write("http realtime result[%s] of main server[%s] response handle faile,get json struct error",http_result.plate_info.license,http_config.main_server.url_string);
 
 							else if(ret == -3)
-								log_write("http resltime result[%s] of main server[%s] response handle faile,get response section in json error",http_result.plate_info.license,	http_config.main_server.url_string);
+								log_write("http realtime result[%s] of main server[%s] response handle faile,get response section in json error",http_result.plate_info.license,	http_config.main_server.url_string);
 
 							else
-								log_write("http resltime result[%s] of main server[%s] response handle faile,unknown error",http_result.plate_info.license,http_config.main_server.url_string);
+								log_write("http realtime result[%s] of main server[%s] response handle faile,unknown error",http_result.plate_info.license,http_config.main_server.url_string);
 
 							//处理失败
 							if(ret== -1)
@@ -619,7 +619,7 @@ int http_realtime_result_send(Reco_Result    *result,
 						}
 					}else
 					{
-						log_write("http resltime result[%s] of main server[%s] get response length is 0,so no operation",http_result.plate_info.license,http_config.main_server.url_string);
+						log_write("http realtime result[%s] of main server[%s] get response length is 0,so no operation",http_result.plate_info.license,http_config.main_server.url_string);
 						
 						recive_state = RECIVE_STATE_DATA_SIZE_ZERO;
 						//接收数据为0

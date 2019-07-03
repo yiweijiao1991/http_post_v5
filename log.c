@@ -136,7 +136,7 @@ int log_write(const char *pFormat, ...)
 	struct stat 	sgbuf;
 	char 		*timestr;
 	char 		log_file_name[100] = {0};
-	char		loginfo[1024*5] = {0};
+	char		loginfo[1024*3] = {0};
 	va_list		args;
 	time_t tt;
 	struct tm *t;
