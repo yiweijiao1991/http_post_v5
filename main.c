@@ -17,6 +17,18 @@ RK_DeviceInfo g_deviceInfo;
 int g_thread_quit = 0;//线程退出标志 0 不退出 1 退出
 io_report_ptr_s g_gpio_report_mem_ptr;;
 
+/*
+ *@function name: 
+	config_signal_deal
+ *@Author: yiweijiao
+ *@Date: 2019-07-04 16:55:52
+ *@describtion: 
+	获取配置参数信号处理函数,注册信号时使用
+ *@parameter: 
+	signal_num[in]:信号值
+ *@return: 
+	无
+*/
 void config_signal_deal(int signal_num)
 {
 	log_write("recive config signal");
@@ -30,11 +42,12 @@ void config_signal_deal(int signal_num)
 int main()
 {
 	int ret = 0;
-	pthread_t thr_http_keepalive_pid;
-	pthread_t thr_http_report_pid;
+	pthread_t thr_http_keepalive_pid;//心跳处理线程
+	pthread_t thr_http_report_pid;//识别结果推送线程
 	void *status;
-	
-	sleep(3);
+	//延时启动，避免rksdk连接失败
+	sleep(5);
+	//日志初始化
 	ret = log_init();
 	if(ret == -1)
 	{
@@ -43,15 +56,14 @@ int main()
 	}
 	log_write("********http_proc(%s) start*********",_VERSION_);
 
-
-
+	//初始化io上报资源
 	ret = io_report_init(&g_gpio_report_mem_ptr);
 	if(ret != 0)
 	{
 		log_write("rk sdk gpio report init  faile ret = %d",ret);
 		return -1;
 	}
-
+	//初始化设备初始化接口
 	ret = init_interface();
 	if(ret < 0)
 	{
@@ -59,7 +71,6 @@ int main()
 		g_thread_quit = 1;
 		return -1;
 	}
-	
 	//HTTP配置信息读取
 	http_config_get(&g_http_cfg);
 	//设备信息读取
