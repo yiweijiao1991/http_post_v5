@@ -34,7 +34,7 @@
 #define RECIVE_STATE_UNKNOWN 			-1		//接收回应状态->未知
 
 #define CLEAN_DATABASE_INTERVAL	1		//清理数据库的间隔单位：秒
-#define CLEAN_IMAGE_INTERVAL	3600	//清理垃圾图片的间隔：秒
+#define CLEAN_IMAGE_INTERVAL	60*5	//清理垃圾图片的间隔：秒
 
 
 
@@ -736,7 +736,7 @@ int http_realtime_result_send(Reco_Result    *result,
 	}
 
 	//删除图片
-	if(ret_value == 0)
+	if(ret_value == 0 || !http_config.offline_continuingly_en)
 	{
 		if(strlen(result->FullImagePath) > 0)
 		{
@@ -932,7 +932,7 @@ int clean_dir(char *root)
 		if(ret == 0)
 		{
 			//判断文件是否超时
-			if((file_state.st_ctime < yestoday ) || (file_state.st_ctime > ts ))	
+			if((file_state.st_mtime < yestoday ) || (file_state.st_mtime > ts ))	
 			{
 				//删除文件
 				remove_file(path);	
